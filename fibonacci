@@ -1,0 +1,528 @@
+# DAA Assignment 1 – Fibonacci Series
+
+I've analysed your complete 6-page practical manual.
+
+**Assignment title:** Write a recursive and non-recursive program to calculate Fibonacci numbers and analyse their time and space complexity.
+
+Let's prepare this assignment in a way that helps you understand the experiment and confidently answer your examiner's viva questions.
+
+---
+
+# 1. What is this assignment all about?
+
+The main purpose of this assignment is to understand **two different approaches to solving the same problem: Recursion and Iteration.**
+
+We use the Fibonacci series to understand these approaches.
+
+### What is the Fibonacci series?
+
+The Fibonacci series is a sequence of numbers in which every number is the sum of the previous two numbers.
+
+The series starts with:
+
+**0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, ...**
+
+For example:
+
+- 0 + 1 = 1
+- 1 + 1 = 2
+- 1 + 2 = 3
+- 2 + 3 = 5
+- 3 + 5 = 8
+
+Mathematically, it is represented as:
+
+\[
+F(n) = F(n-1) + F(n-2)
+\]
+
+With two initial conditions:
+
+\[
+F(0)=0,\quad F(1)=1
+\]
+
+### What are we implementing in this assignment?
+
+We calculate Fibonacci numbers using two methods.
+
+**Method 1: Non-recursive (Iterative)**
+
+- We use loops to calculate Fibonacci numbers.
+- We store the previous two numbers.
+- We add them to calculate the next number.
+- We repeat until we reach the required position.
+
+**Method 2: Recursive**
+
+- A function calls itself to calculate Fibonacci numbers.
+- To calculate F(5), it calls F(4) and F(3).
+- These functions continue calling themselves until they reach the base condition.
+
+The important difference is:
+
+| Iteration | Recursion |
+|---|---|
+| Uses loops | Uses function calls |
+| Does not call itself | Function calls itself |
+| Generally faster | Generally slower for basic Fibonacci |
+| Uses O(1) auxiliary space in optimized form | Uses O(n) stack space |
+
+Assignment 1 DAA
+
+---
+
+# 2. Important concepts you must understand
+
+### Q1. What is an algorithm?
+An algorithm is a finite sequence of steps used to solve a particular problem.
+
+### Q2. What is recursion?
+Recursion is a programming technique in which a function calls itself to solve smaller versions of a problem.
+
+### Q3. What is iteration?
+Iteration is a programming technique in which a set of instructions is repeatedly executed using loops.
+
+### Q4. What is a base condition?
+A base condition is the condition that stops recursive function calls and prevents infinite recursion.
+
+In Fibonacci:
+
+```python
+if n <= 1:
+    return n
+```
+
+### Q5. What happens if we don't use a base condition?
+The recursive function will keep calling itself indefinitely until a stack overflow or recursion-depth error occurs.
+
+### Q6. What is time complexity?
+Time complexity measures how the execution time of an algorithm grows with the size of its input.
+
+### Q7. What is space complexity?
+Space complexity measures how much memory an algorithm requires as the input size increases.
+
+### Q8. What is Big-O notation?
+Big-O notation represents the upper bound of an algorithm's growth rate and is commonly used to describe its worst-case complexity.
+
+---
+
+---
+
+# 3. Algorithm and working
+
+## A. Non-recursive Fibonacci algorithm
+
+**Logic:** We maintain two variables representing the previous two Fibonacci numbers and calculate the next number using a loop.
+
+### Pseudocode
+
+```text
+START
+Input n
+
+a = 0
+b = 1
+
+Repeat n times:
+    Print a
+    c = a + b
+    a = b
+    b = c
+
+STOP
+```
+
+### Example: Generate first 6 Fibonacci numbers
+
+| Iteration | a | b | Output |
+|---|---:|---:|---:|
+| 1 | 0 | 1 | 0 |
+| 2 | 1 | 1 | 1 |
+| 3 | 1 | 2 | 1 |
+| 4 | 2 | 3 | 2 |
+| 5 | 3 | 5 | 3 |
+| 6 | 5 | 8 | 5 |
+
+Output: `0 1 1 2 3 5`
+
+### Complexity
+
+- **Time Complexity: O(n)** – The loop executes n times.
+- **Space Complexity: O(1)** – We use only three variables, regardless of n.
+
+## B. Recursive Fibonacci algorithm
+
+**Logic:** A function calls itself to calculate the previous two Fibonacci numbers and adds their results.
+
+### Pseudocode
+
+```text
+START
+
+Function Fibonacci(n):
+
+    If n <= 1:
+        Return n
+
+    Else:
+        Return Fibonacci(n-1) + Fibonacci(n-2)
+
+Input n
+Print Fibonacci(n)
+
+STOP
+```
+
+### Example: Calculate Fibonacci(4)
+
+The function calls are:
+
+```text
+Fibonacci(4)
+     |
+     |------ Fibonacci(3)
+     |           |
+     |           |------ Fibonacci(2)
+     |           |          |
+     |           |          |--- Fibonacci(1) = 1
+     |           |          |--- Fibonacci(0) = 0
+     |           |
+     |           |------ Fibonacci(1) = 1
+     |
+     |------ Fibonacci(2)
+                 |
+                 |--- Fibonacci(1) = 1
+                 |--- Fibonacci(0) = 0
+```
+
+Now calculate:
+
+- Fibonacci(2) = 1 + 0 = 1
+- Fibonacci(3) = 1 + 1 = 2
+- Fibonacci(4) = 2 + 1 = 3
+
+**Output: 3**
+
+### Complexity
+
+- **Time Complexity: O(2ⁿ)** – The function makes multiple repeated calls, resulting in exponential growth.
+- **Space Complexity: O(n)** – Recursive calls are stored in the function call stack.
+
+Your manual discusses this analysis on pages 3–4. Assignment 1 DAA
+
+---
+
+# 4. Important viva questions with answers
+
+These are additional questions based on the concepts and algorithms in your manual.
+
+### Basic Fibonacci questions
+
+**Q1. Who introduced the Fibonacci series?**
+
+Leonardo Pisano Bogollo, popularly known as Fibonacci, introduced the sequence to European mathematics.
+
+**Q2. What are the first two numbers of the Fibonacci series?**
+
+0 and 1.
+
+**Q3. What is the recurrence relation of Fibonacci?**
+
+F(n) = F(n-1) + F(n-2).
+
+**Q4. What is F(0)?**
+
+F(0) = 0.
+
+**Q5. What is F(1)?**
+
+F(1) = 1.
+
+**Q6. What is F(7)?**
+
+F(7) = 13, using zero-based indexing.
+
+**Q7. Is Fibonacci a linear or nonlinear sequence?**
+
+It is a sequence defined using a linear recurrence relation involving its previous two terms.
+
+### Recursion-related questions
+
+**Q8. Why do we use recursion in this assignment?**
+
+To calculate Fibonacci numbers by breaking the problem into smaller subproblems of the same type.
+
+**Q9. What is a recursive function?**
+
+A function that calls itself directly or indirectly.
+
+**Q10. What is a recursive call?**
+
+When a function calls itself during its execution, it is called a recursive call.
+
+**Q11. What is a base case in Fibonacci?**
+
+When n is 0 or 1, the function directly returns n without making further recursive calls.
+
+**Q12. What is stack overflow?**
+
+Stack overflow occurs when the program exceeds the available call stack memory, often due to excessive or infinite recursion.
+
+**Q13. What is the main disadvantage of recursive Fibonacci?**
+
+It performs repeated calculations, making it inefficient for larger values of n.
+
+### Iteration-related questions
+
+**Q14. Why is iteration better than simple recursion for Fibonacci?**
+
+Iteration avoids repeated function calls and calculates each Fibonacci number only once.
+
+**Q15. Which loop can be used to implement Fibonacci?**
+
+A for loop or while loop.
+
+**Q16. Does iteration require a function call stack for every iteration?**
+
+No. Iteration uses loops and does not create a new recursive function call for each iteration.
+
+**Q17. Which approach is generally more memory-efficient?**
+
+The space-optimized iterative approach because it requires O(1) auxiliary space.
+
+---
+
+# 5. Time and space complexity questions
+
+This is one of the most important sections because your assignment specifically focuses on complexity analysis.
+
+**Q18. What is the time complexity of recursive Fibonacci?**
+
+O(2ⁿ), because the function makes repeated recursive calls.
+
+**Q19. What is the space complexity of recursive Fibonacci?**
+
+O(n), because the maximum depth of the recursive call stack is proportional to n.
+
+**Q20. What is the time complexity of iterative Fibonacci?**
+
+O(n), because the loop executes n times.
+
+**Q21. What is the space complexity of iterative Fibonacci?**
+
+O(1), when we store only the previous two numbers and the next calculated number.
+
+**Q22. Which algorithm is faster?**
+
+The iterative algorithm is generally faster because it avoids repeated calculations and recursive function-call overhead.
+
+**Q23. What is exponential time complexity?**
+
+It is a complexity in which the execution time grows exponentially as the input size increases.
+
+**Q24. What is linear time complexity?**
+
+It is a complexity in which execution time increases proportionally with input size.
+
+**Q25. What is auxiliary space?**
+
+Auxiliary space is the extra memory used by an algorithm, excluding the memory required for the input.
+
+### Important complexity comparison
+
+| Method | Time Complexity | Space Complexity |
+|---|---|---|
+| Recursive | O(2ⁿ) | O(n) |
+| Iterative (optimized) | O(n) | O(1) |
+| Dynamic Programming (array) | O(n) | O(n) |
+| Dynamic Programming (optimized) | O(n) | O(1) |
+
+Assignment 1 DAA
+
+---
+
+# 6. Advanced viva questions
+
+These questions are slightly more conceptual. Examiners may ask them to check your understanding.
+
+**Q26. What is Dynamic Programming?**
+
+Dynamic Programming is a technique that stores previously calculated results to avoid solving the same subproblem repeatedly.
+
+**Q27. How can we optimize recursive Fibonacci?**
+
+We can use memoization to store previously calculated Fibonacci values and reuse them.
+
+**Q28. What is memoization?**
+
+Memoization is a technique in which calculated results are stored so that repeated function calls do not perform the same calculations again.
+
+**Q29. What is the Golden Ratio?**
+
+The Golden Ratio is approximately 1.618 and is represented by the Greek letter phi (φ).
+
+**Q30. What is Fibonacci Search?**
+
+Fibonacci Search is a searching technique that uses Fibonacci numbers to divide a sorted array into smaller sections.
+
+**Q31. What is the difference between memoization and tabulation?**
+
+- Memoization uses a top-down recursive approach.
+- Tabulation uses a bottom-up iterative approach.
+
+**Q32. What is the advantage of Dynamic Programming over simple recursion?**
+
+It avoids repeated calculations and significantly improves execution time.
+
+**Q33. Can Fibonacci numbers be calculated without recursion or loops?**
+
+Yes. We can use a mathematical formula called Binet's formula.
+
+---
+
+# 7. Questions directly from your assignment manual
+
+These are particularly important because they are explicitly listed in your practical manual.
+
+### Q34. Write the recurrence relation for Fibonacci numbers and solve it.
+
+The recurrence relation is:
+
+\[
+F(n)=F(n-1)+F(n-2)
+\]
+
+With initial conditions:
+
+\[
+F(0)=0,\quad F(1)=1
+\]
+
+The first few values are 0, 1, 1, 2, 3, 5, 8.
+
+### Q35. Explain the time and space complexity of recursive Fibonacci.
+
+- Time Complexity: O(2ⁿ), because each function call generates two more recursive calls in the general case.
+- Space Complexity: O(n), because recursive calls are stored in the call stack.
+
+### Q36. Explain the time and space complexity of non-recursive Fibonacci.
+
+- Time Complexity: O(n), because the loop executes n times.
+- Space Complexity: O(1), because only three variables are required.
+
+### Q37. How can we improve the purely recursive Fibonacci algorithm?
+
+We can use Dynamic Programming with memoization to store previously calculated results. This reduces the time complexity from exponential O(2ⁿ) to linear O(n).
+
+### Q38. Explain different techniques to optimize Fibonacci algorithms.
+
+1. **Recursion:** Uses function calls to calculate Fibonacci numbers.
+2. **Memoization:** Stores previously calculated results.
+3. **Tabulation:** Uses an array to calculate and store values iteratively.
+4. **Space Optimization:** Stores only the previous two numbers.
+5. **Matrix Exponentiation:** Uses matrix multiplication to calculate Fibonacci numbers in O(log n) time.
+
+### Q39. What are the applications of Fibonacci series?
+
+Some applications include:
+- Computer algorithms and computational analysis.
+- Fibonacci Search.
+- Financial market technical analysis.
+- Mathematical sequences.
+- Patterns found in nature.
+
+These applications are mentioned on page 5 of your manual. Assignment 1 DAA
+
+---
+
+# 8. Tricky questions your examiner might ask
+
+Pay special attention to these!
+
+**Q40. What happens if we enter n = 0?**
+
+The Fibonacci function returns 0 because it satisfies the base condition.
+
+**Q41. What happens if we enter n = 1?**
+
+The Fibonacci function returns 1.
+
+**Q42. Why is recursive Fibonacci slower even though its code is shorter?**
+
+Because it calculates the same Fibonacci values multiple times through repeated recursive calls.
+
+**Q43. Does recursion always have exponential time complexity?**
+
+No. Time complexity depends on the algorithm. Some recursive algorithms have linear or logarithmic complexity.
+
+**Q44. Can we implement Fibonacci using Dynamic Programming?**
+
+Yes. We can store previously calculated Fibonacci numbers in an array or variables.
+
+**Q45. Which method would you prefer and why?**
+
+I would prefer the iterative method because it is faster, simpler to execute and requires constant auxiliary space.
+
+**Q46. What is the maximum recursion depth?**
+
+It depends on the programming language and available stack memory. For recursive Fibonacci, the maximum depth is proportional to n.
+
+**Q47. What is the difference between O(n) and O(2ⁿ)?**
+
+O(n) represents linear growth, whereas O(2ⁿ) represents exponential growth. Exponential algorithms become significantly slower as input increases.
+
+---
+
+# 9. Important things to remember before your practical
+
+Memorize this comparison table. It covers the most important concepts of the entire assignment.
+
+| Concept | Recursive | Non-recursive |
+|---|---|---|
+| Technique | Recursion | Iteration |
+| Uses | Function calls | Loops |
+| Time complexity | O(2ⁿ) | O(n) |
+| Space complexity | O(n) | O(1) |
+| Repeated calculations | Yes | No |
+| Generally faster | No | Yes |
+
+### Five things you absolutely must know
+
+1. Fibonacci series and its recurrence relation.
+2. Difference between recursion and iteration.
+3. Base condition and recursive function.
+4. Time and space complexity of both approaches.
+5. Dynamic Programming and memoization.
+
+### One important clarification about your manual
+
+On page 5, the complexity comparison table contains several optimization techniques. Remember the distinction:
+
+- Dynamic Programming using an array: O(n) time and O(n) space.
+- Space-optimized Dynamic Programming: O(n) time and O(1) auxiliary space.
+
+Also, the recursive complexity derivation on page 4 is an approximation. The standard recurrence is:
+
+\[
+T(n)=T(n-1)+T(n-2)+O(1)
+\]
+
+Its tight asymptotic growth is approximately O(1.618ⁿ), commonly bounded by O(2ⁿ).
+
+---
+
+## My recommendation for your viva preparation
+
+For this assignment, give maximum attention to **recursion, iteration, recurrence relations and complexity analysis**.
+
+Your examiner is very likely to ask you to:
+- Explain the Fibonacci series.
+- Explain the working of both algorithms.
+- Calculate a Fibonacci number manually.
+- Compare recursive and iterative approaches.
+- Explain why recursive Fibonacci has exponential time complexity.
+
+**We'll follow this same structure for all your upcoming DAA assignments:** first understand what the experiment does, then understand its algorithm, followed by basic, conceptual, complexity-related and tricky viva questions.
+
+Send Assignment 2 whenever you're ready!

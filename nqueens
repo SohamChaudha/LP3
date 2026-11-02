@@ -1,0 +1,452 @@
+# DAA Assignment 4 – N-Queens Problem Using Backtracking
+
+I've analysed your uploaded practical manual.
+
+**One small observation:** Your PDF is named Assignment No. 4, but the manual itself mentions **Assignment No. 5**. The topic is N-Queens using Backtracking.
+
+**Assignment title:** Design an N-Queens matrix having the first Queen placed. Use Backtracking to place the remaining Queens and generate the final N-Queens matrix.
+
+Let's understand this experiment and prepare for your practical viva.
+
+---
+
+# 1. What is this assignment all about?
+
+Imagine you have an 8 × 8 chessboard and 8 Queens.
+
+Your task is to place all 8 Queens on the chessboard such that **no Queen can attack another Queen**.
+
+This is called the N-Queens Problem.
+
+### First, understand how a Queen moves in chess.
+
+A Queen can move in three directions:
+
+1. Horizontally – Along rows.
+2. Vertically – Along columns.
+3. Diagonally – Along diagonals.
+
+Therefore, while placing Queens, we must ensure:
+
+- No two Queens are in the same row.
+- No two Queens are in the same column.
+- No two Queens are on the same diagonal.
+
+If any two Queens violate these conditions, the arrangement is invalid.
+
+
+
+### What is the objective of this assignment?
+
+We have to:
+- Create an N × N chessboard using a matrix.
+- Place the first Queen at a specified position.
+- Place the remaining Queens using Backtracking.
+- Check whether every new position is safe.
+- If a position is unsafe, go back and try another position.
+- Continue until all Queens are placed successfully.
+
+Your manual describes this exact approach on page 1. DAA-Assignment No 4
+
+---
+
+# 2. What is Backtracking?
+
+Backtracking is an algorithmic technique used to solve problems by trying different possible solutions step by step.
+
+If a particular choice does not lead to a valid solution, we undo that choice and try another possibility.
+
+### Understand with a simple example
+
+Suppose you are solving a maze.
+
+- You move forward.
+- If you reach a dead end, you go backwards.
+- You try another path.
+- You continue until you find the correct path.
+
+This is called Backtracking.
+
+### How does Backtracking work in N-Queens?
+
+1. Place a Queen in a possible position.
+2. Check whether that position is safe.
+3. If safe, move to the next row.
+4. If unsafe, try another column.
+5. If no column is safe, go back to the previous row.
+6. Remove the previously placed Queen and try another position.
+
+**Remember:** Backtracking means making a choice, checking it, and undoing it if it doesn't work.
+
+DAA-Assignment No 4
+
+---
+
+# 3. How does the N-Queens Algorithm work?
+
+Let's understand using the example from your manual.
+
+### Given:
+
+- N = 4
+- Chessboard = 4 × 4
+- First Queen = Row 1, Column 1
+
+Initially, our chessboard looks like this:
+
+```text
+Q  .  .  .
+.  .  .  .
+.  .  .  .
+.  .  .  .
+```
+
+Here:
+- Q represents a Queen.
+- . represents an empty position.
+
+### Step 1: Place the second Queen
+
+We move to Row 2.
+
+We cannot place the Queen in:
+- Column 1 (same column).
+- Column 2 (diagonal conflict).
+
+So we place it in Column 3.
+
+```text
+Q  .  .  .
+.  .  Q  .
+.  .  .  .
+.  .  .  .
+```
+
+### Step 2: Place the third Queen
+
+Now we move to Row 3.
+
+We check every column.
+
+- Column 1: Same column as Queen 1.
+- Column 2: Safe.
+- Column 3: Same column as Queen 2.
+- Column 4: Safe.
+
+The algorithm can try Column 2 first, but this leads to a dead end later. It backtracks and tries Column 4.
+
+```text
+Q  .  .  .
+.  .  Q  .
+.  .  .  Q
+.  .  .  .
+```
+
+### Step 3: Place the fourth Queen
+
+We move to Row 4.
+
+After checking the available positions, Column 2 is safe.
+
+```text
+Q  .  .  .
+.  .  Q  .
+.  .  .  Q
+.  Q  .  .
+```
+
+### Final Answer
+
+We successfully placed all four Queens.
+
+| Queen | Row | Column |
+|---|---:|---:|
+| Queen 1 | 1 | 1 |
+| Queen 2 | 2 | 3 |
+| Queen 3 | 3 | 4 |
+| Queen 4 | 4 | 2 |
+
+No two Queens share the same row, column or diagonal.
+
+This is the valid solution given in your practical manual. DAA-Assignment No 4
+
+---
+
+# 4. How do we check whether a Queen's position is safe?
+
+This is the most important concept in your assignment.
+
+Before placing a Queen, we must check three conditions.
+
+### Condition 1: Same Column
+
+Check whether another Queen already exists in the same column.
+
+Example:
+
+```text
+Q  .  .
+.  .  .
+Q  .  .
+```
+
+Both Queens are in Column 1.
+
+This is an invalid arrangement.
+
+### Condition 2: Left Diagonal
+
+Check whether another Queen exists on the upper-left diagonal.
+
+### Condition 3: Right Diagonal
+
+Check whether another Queen exists on the upper-right diagonal.
+
+If any of these conditions is true, the position is unsafe.
+
+**Important:** We place only one Queen per row, so we don't need to check the same row separately.
+
+---
+
+# 5. Important Theoretical Questions with Answers
+
+These questions cover the fundamental concepts of your assignment.
+
+### Basic Questions
+
+**Q1. What is the N-Queens Problem?**
+
+It is a problem of placing N Queens on an N × N chessboard such that no two Queens attack each other.
+
+**Q2. What is Backtracking?**
+
+Backtracking is an algorithmic technique that tries possible solutions and goes back whenever a choice cannot lead to a valid solution.
+
+**Q3. Why is N-Queens called a Backtracking problem?**
+
+Because whenever a Queen cannot be placed safely, the algorithm removes the previously placed Queen and tries another position.
+
+**Q4. What is a chessboard matrix?**
+
+It is a two-dimensional array of size N × N used to represent the chessboard.
+
+**Q5. What does N represent?**
+
+N represents the number of Queens and the number of rows and columns in the chessboard.
+
+**Q6. How many Queens are placed in an N × N chessboard?**
+
+Exactly N Queens.
+
+**Q7. What are the three attacking directions of a Queen?**
+
+Horizontal, vertical and diagonal.
+
+**Q8. What is a safe position?**
+
+A position where a Queen cannot attack any previously placed Queen.
+
+**Q9. What is an unsafe position?**
+
+A position where a Queen can attack another already placed Queen.
+
+**Q10. What happens when no safe position is available?**
+
+The algorithm backtracks to the previous row and tries another column.
+
+### Backtracking-Related Questions
+
+**Q11. What are the basic steps of Backtracking?**
+
+Select a choice, check whether it is valid, proceed if valid, otherwise undo the choice and try another option.
+
+**Q12. What is the purpose of Backtracking?**
+
+To systematically explore possible solutions while avoiding choices that cannot lead to a valid solution.
+
+**Q13. Is Backtracking a recursive technique?**
+
+Yes. It is commonly implemented using recursion because the algorithm repeatedly solves smaller versions of the problem.
+
+**Q14. What is the base condition in N-Queens?**
+
+When all N Queens have been successfully placed, the algorithm returns success.
+
+**Q15. What happens if the algorithm cannot place all Queens?**
+
+It returns failure after exploring all possible arrangements.
+
+**Q16. Why do we place one Queen per row?**
+
+Because no two Queens can occupy the same row.
+
+**Q17. Can two Queens be placed in the same column?**
+
+No, because they would attack each other vertically.
+
+**Q18. What is the difference between Recursion and Backtracking?**
+
+Recursion is a technique in which a function calls itself. Backtracking is a problem-solving technique that uses trial, validation and undoing of choices.
+
+**Q19. Can Backtracking find all possible solutions?**
+
+Yes. By continuing the search after finding a solution, it can generate all valid solutions.
+
+**Q20. Is the N-Queens problem always solvable?**
+
+For standard N-Queens, solutions exist for N = 1 and all N ≥ 4. There are no solutions for N = 2 and N = 3.
+
+---
+
+# 6. Complexity Analysis
+
+Your uploaded manual does not provide a detailed complexity analysis, but these are the standard complexities of the N-Queens backtracking algorithm.
+
+### Time Complexity
+
+\[
+\boxed{O(N!)}
+\]
+
+**Why?**
+
+- For the first row, we have N possible positions.
+- For the second row, at most N−1 remaining columns.
+- For the third row, at most N−2 remaining columns.
+- This continues until all rows are explored.
+
+Therefore, the worst-case search space is bounded by:
+
+\[
+N \times (N-1) \times (N-2) \times \cdots \times 1
+\]
+
+\[
+= N!
+\]
+
+The actual number of explored positions can be smaller because unsafe positions are rejected early.
+
+### Space Complexity
+
+\[
+\boxed{O(N^2)}
+\]
+
+When we use an N × N matrix to represent the chessboard.
+
+The recursion stack requires O(N) additional space.
+
+### Complexity Summary
+
+| Parameter | Complexity |
+|---|---|
+| Time Complexity | O(N!) |
+| Chessboard Space | O(N²) |
+| Recursion Stack | O(N) |
+| Total Auxiliary Space | O(N²) |
+
+---
+
+# 7. Important Applications of Backtracking
+
+Your manual mentions the following applications:
+
+1. **N-Queens:** Placing Queens without conflicts.
+2. **Sudoku:** Finding valid numbers for empty cells.
+3. **Maze Solving:** Finding a valid path through a maze.
+4. **Graph Coloring:** Coloring vertices without adjacent vertices having the same color.
+5. **Subset Sum:** Finding subsets whose sum equals a given target.
+
+DAA-Assignment No 4
+
+---
+
+# 8. Tricky Viva Questions
+
+These questions can help you prepare for conceptual questions from your examiner.
+
+**Q21. Why do we check diagonals in N-Queens?**
+
+Because a Queen can attack another Queen diagonally, even if they are in different rows and columns.
+
+**Q22. How can we identify whether two Queens are on the same diagonal?**
+
+For two positions (r1, c1) and (r2, c2), they share a diagonal if:
+
+\[
+|r1-r2|=|c1-c2|
+\]
+
+**Q23. Why do we remove a Queen during Backtracking?**
+
+Because the current position does not lead to a valid solution, so we undo the previous choice and try another position.
+
+**Q24. What is the difference between Backtracking and Brute Force?**
+
+Brute Force tries all possible combinations, whereas Backtracking rejects invalid choices early to reduce unnecessary searching.
+
+**Q25. What happens for N = 2 and N = 3?**
+
+No valid arrangement exists for these board sizes.
+
+**Q26. What happens when N = 1?**
+
+Only one Queen is placed on the 1 × 1 chessboard, and it is a valid solution.
+
+**Q27. Can the N-Queens problem have multiple solutions?**
+
+Yes. For example, the 4-Queens problem has two valid solutions if the first Queen's position is not fixed.
+
+**Q28. Why do we use recursion in Backtracking?**
+
+Recursion allows us to place Queens row by row and return to previous rows whenever a conflict occurs.
+
+**Q29. What is pruning?**
+
+Pruning means eliminating invalid possibilities early without exploring them further.
+
+**Q30. What is the difference between finding one solution and finding all solutions?**
+
+Finding one solution stops as soon as a valid arrangement is found. Finding all solutions continues exploring all possible arrangements.
+
+---
+
+# 9. Quick Revision Before Your Practical
+
+| Topic | Answer |
+|---|---|
+| Problem | N-Queens |
+| Technique | Backtracking |
+| Data Structure | 2D Matrix |
+| Board Size | N × N |
+| Number of Queens | N |
+| Same Row | Not allowed |
+| Same Column | Not allowed |
+| Same Diagonal | Not allowed |
+| Base Condition | All N Queens placed |
+| Time Complexity | O(N!) |
+| Space Complexity | O(N²) |
+| Other Applications | Sudoku, Maze, Graph Coloring |
+
+### 5 questions you should definitely prepare
+
+1. What is the N-Queens Problem?
+2. What is Backtracking?
+3. How do you check whether a Queen's position is safe?
+4. Explain the 4-Queens problem with an example.
+5. What happens when no safe position is available?
+
+---
+
+## My recommendation for this assignment
+
+Focus particularly on these three things:
+
+- **Safe Position:** Understand how to check rows, columns and diagonals.
+- **Backtracking:** Understand why we remove a Queen and try another position.
+- **4-Queens Example:** Practise drawing the chessboard and placing all four Queens manually.
+
+The examiner may give you N = 4 and ask you to demonstrate how Backtracking places the Queens.
+
+**Next:** Once you've understood the theory, we can write the Python implementation using recursion and Backtracking, with comments explaining every line, just like Assignments 1 and 2.

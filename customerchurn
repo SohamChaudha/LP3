@@ -1,0 +1,654 @@
+# ML Assignment 10: Bank Customer Churn Prediction Using Artificial Neural Networks
+
+Let's understand your third ML assignment.
+
+**Title:** Given a bank customer, build a neural network-based classifier that can determine whether they will leave or not in the next six months.
+
+This assignment is about predicting whether a bank customer will continue using the bank's services or leave the bank.
+
+The technical term for this is **Customer Churn Prediction**.
+
+Your manual asks you to build an Artificial Neural Network (ANN), prepare the dataset, normalize the data, train the model, and evaluate it using accuracy and a confusion matrix. Assignment_10
+
+---
+
+## 1. What is this assignment all about?
+
+Imagine a bank has 10,000 customers.
+
+Some customers continue using the bank, while others close their accounts and move to another bank.
+
+The bank wants to identify customers who are likely to leave within the next six months.
+
+Why?
+
+Because the bank can contact those customers, understand their problems, and offer better services to retain them.
+
+We will train a neural network using historical customer data. It will learn patterns associated with customers who left and customers who stayed.
+
+For a new customer, it will predict:
+
+- `1` → Customer will leave (Exited).
+- `0` → Customer will stay (Not Exited).
+
+### What type of ML problem is this?
+
+**Supervised Learning – Binary Classification**
+
+- Supervised learning: We train the model using historical data with known outcomes.
+- Classification: We predict a category.
+- Binary classification: We have two possible outcomes.
+
+---
+
+## 2. Understanding the Dataset
+
+Your manual describes a Kaggle dataset containing:
+
+- 10,000 customer records.
+- 14 distinct features.
+- Customer information such as CustomerId, CreditScore, Geography, Gender, Age, Tenure and Balance. Assignment_10
+
+Let's understand some important columns:
+
+| Column | Meaning |
+|---|---|
+| RowNumber | Row number in the dataset |
+| CustomerId | Unique customer identifier |
+| Surname | Customer's surname |
+| CreditScore | Customer's credit score |
+| Geography | Customer's country |
+| Gender | Customer's gender |
+| Age | Customer's age |
+| Tenure | Number of years with the bank |
+| Balance | Amount of money in the account |
+| NumOfProducts | Number of bank products used |
+| HasCrCard | Whether the customer has a credit card |
+| IsActiveMember | Whether the customer is an active member |
+| EstimatedSalary | Estimated customer salary |
+| Exited | Whether the customer left the bank |
+
+**Important:**
+
+- Features (X): Customer information used to make predictions.
+- Target (y): `Exited`, which tells whether the customer left.
+
+For example:
+
+| Age | Geography | Balance | IsActiveMember | Exited |
+|---:|---|---:|---:|---:|
+| 35 | France | 50000 | 1 | 0 |
+| 45 | Germany | 80000 | 0 | 1 |
+| 29 | Spain | 30000 | 1 | 0 |
+
+The model learns relationships between customer information and the `Exited` column.
+
+---
+
+## 3. Artificial Neural Network (ANN)
+
+An Artificial Neural Network is a machine learning model inspired by the structure and working of the human brain.
+
+The human brain contains interconnected neurons. Similarly, an ANN contains interconnected artificial neurons, also called **nodes**.
+
+These nodes are arranged in layers and process information to produce an output. Assignment_10
+
+### Biological Neural Network vs Artificial Neural Network
+
+Your manual shows this comparison on page 3:
+
+| Biological Neural Network | Artificial Neural Network |
+|---|---|
+| Dendrites | Inputs |
+| Cell nucleus | Nodes |
+| Synapse | Weights |
+| Axon | Output |
+
+### How does an ANN work?
+
+Imagine we want to predict whether a bank customer will leave.
+
+We provide information such as:
+- Age
+- Credit Score
+- Balance
+- Tenure
+- Number of products
+
+The neural network processes these inputs and produces an output:
+
+- `0` → Customer stays.
+- `1` → Customer leaves.
+
+### Architecture of an ANN
+
+An ANN primarily consists of three types of layers:
+
+#### A. Input Layer
+
+The input layer receives the dataset features.
+
+For example, if we use 11 customer features, the input layer receives 11 input values.
+
+#### B. Hidden Layer
+
+The hidden layer performs calculations and learns patterns from the input data.
+
+For example, it may learn that certain combinations of age, balance and activity are associated with customers leaving.
+
+An ANN can have one or multiple hidden layers.
+
+#### C. Output Layer
+
+The output layer produces the final prediction.
+
+For our assignment, there are two possible classes:
+- 0 → Customer stays.
+- 1 → Customer leaves.
+
+The diagram on page 4 of your manual illustrates an input layer, two hidden layers and an output layer. Assignment_10
+
+### What are weights?
+
+Weights determine the importance of different inputs when a neuron calculates its output.
+
+For example, the model may learn that customer age is more useful than some other feature when predicting churn.
+
+The network adjusts its weights during training to improve its predictions.
+
+**Remember:** An ANN learns by adjusting its weights based on prediction errors.
+
+---
+
+## 4. How Does an ANN Learn?
+
+To understand the practical, remember these basic steps:
+
+1. **Forward Propagation:** Input data passes through the network and produces a prediction.
+2. **Calculate Loss:** The model compares its prediction with the actual answer.
+3. **Backpropagation:** The model calculates how its weights contributed to the error.
+4. **Weight Update:** An optimizer adjusts the weights to reduce the error.
+5. These steps repeat over multiple training iterations.
+
+### Important terms
+
+| Term | Meaning |
+|---|---|
+| Epoch | One complete pass through the training dataset |
+| Batch Size | Number of training samples processed together |
+| Neuron | Basic processing unit of an ANN |
+| Weight | Parameter learned by the network |
+| Bias | Additional learnable parameter |
+| Activation Function | Determines the output of a neuron |
+| Loss Function | Measures prediction error |
+| Optimizer | Updates weights to reduce the loss |
+
+For a binary classification problem, a common output activation function is **Sigmoid**.
+
+It produces an output between 0 and 1, which can be interpreted as the probability of a customer leaving.
+
+For example:
+
+- Output = 0.90 → 90% estimated probability of leaving.
+- Output = 0.15 → 15% estimated probability of leaving.
+
+A threshold, commonly 0.5, can convert this probability into a class prediction.
+
+---
+
+## 5. Keras and TensorFlow
+
+Your manual lists Keras and TensorFlow as important topics.
+
+### A. TensorFlow
+
+TensorFlow is an open-source machine learning framework developed by Google.
+
+It is used to build, train and deploy machine learning and deep learning models.
+
+### B. Keras
+
+Keras is a high-level deep learning API used to build neural networks easily.
+
+It provides simple tools to:
+- Create neural network layers.
+- Configure a model.
+- Train a model.
+- Evaluate model performance.
+
+In Python, we commonly use Keras through TensorFlow:
+
+```python
+from tensorflow import keras
+from tensorflow.keras import layers
+```
+
+**Easy way to remember:**
+- TensorFlow → Machine learning framework.
+- Keras → Simple interface for building neural networks.
+
+---
+
+## 6. Normalization
+
+Normalization is a data preprocessing technique used to bring numerical values into a common range.
+
+Why is it important?
+
+Imagine our dataset contains:
+
+| Feature | Values |
+|---|---|
+| Age | 20–80 |
+| CreditScore | 300–850 |
+| Balance | 0–250000 |
+| EstimatedSalary | 0–200000 |
+
+These features have very different numerical ranges.
+
+Normalizing them helps prevent features with large numerical values from dominating the learning process.
+
+### Min-Max Normalization
+
+A common normalization formula is:
+
+\[
+X_{normalized}=\frac{X-X_{min}}{X_{max}-X_{min}}
+\]
+
+It generally converts values into the range 0 to 1.
+
+**Example:**
+
+Suppose:
+- Minimum age = 20
+- Maximum age = 80
+- Customer age = 50
+
+Then:
+
+\[
+X_{normalized}=\frac{50-20}{80-20}
+\]
+
+\[
+=\frac{30}{60}=0.5
+\]
+
+The normalized age is **0.5**.
+
+### Normalization vs Standardization
+
+These terms are related but not identical.
+
+| Normalization | Standardization |
+|---|---|
+| Usually scales values to a fixed range, such as 0 to 1 | Transforms values using mean and standard deviation |
+| Uses minimum and maximum values | Uses mean and standard deviation |
+| Formula: \((X-X_{min})/(X_{max}-X_{min})\) | Formula: \((X-\mu)/\sigma\) |
+
+Where:
+- \(\mu\) = Mean
+- \(\sigma\) = Standard deviation
+
+**Important practical point:** Calculate scaling parameters using only the training data. Then apply the same transformation to the test data. This avoids data leakage.
+
+---
+
+## 7. Confusion Matrix
+
+A confusion matrix is a table used to evaluate the performance of a classification model by comparing actual values with predicted values.
+
+Your manual explains that a confusion matrix for two classes has four possible outcomes. It is also called an error matrix. Assignment_10
+
+For our bank churn prediction:
+
+- Positive (1) → Customer leaves.
+- Negative (0) → Customer stays.
+
+| | Actual: Left (1) | Actual: Stayed (0) |
+|---|---|---|
+| Predicted: Left (1) | TP | FP |
+| Predicted: Stayed (0) | FN | TN |
+
+### Understand the four terms
+
+**1. True Positive (TP)**
+
+The model predicts that a customer will leave, and the customer actually leaves.
+
+**2. True Negative (TN)**
+
+The model predicts that a customer will stay, and the customer actually stays.
+
+**3. False Positive (FP)**
+
+The model predicts that a customer will leave, but the customer actually stays.
+
+**4. False Negative (FN)**
+
+The model predicts that a customer will stay, but the customer actually leaves.
+
+Your manual also identifies:
+- False Positive as a Type-I error.
+- False Negative as a Type-II error. Assignment_10
+
+### Example
+
+Suppose the model predicts outcomes for 100 customers:
+
+| | Actual Left | Actual Stayed |
+|---|---:|---:|
+| Predicted Left | 20 | 5 |
+| Predicted Stayed | 6 | 69 |
+
+Here:
+
+- TP = 20
+- FP = 5
+- FN = 6
+- TN = 69
+
+Total predictions:
+
+\[
+20+5+6+69=100
+\]
+
+### Why is a confusion matrix important?
+
+It tells us not only how many predictions are correct, but also what types of mistakes the model makes.
+
+For a bank, false negatives are particularly important because the bank may fail to identify a customer who is actually going to leave.
+
+---
+
+## 8. Evaluation Metrics
+
+Your manual explains the following metrics for evaluating classification models. Assignment_10
+
+### A. Accuracy
+
+Accuracy measures the percentage of correct predictions.
+
+\[
+Accuracy=\frac{TP+TN}{TP+TN+FP+FN}
+\]
+
+Using our example:
+
+\[
+Accuracy=\frac{20+69}{100}=89\%
+\]
+
+### B. Misclassification Rate
+
+It measures the percentage of incorrect predictions.
+
+\[
+Misclassification\ Rate=\frac{FP+FN}{Total}
+\]
+
+\[
+=\frac{5+6}{100}=11\%
+\]
+
+Remember:
+
+\[
+Misclassification\ Rate=1-Accuracy
+\]
+
+### C. Precision
+
+Precision measures how many customers predicted to leave actually left.
+
+\[
+Precision=\frac{TP}{TP+FP}
+\]
+
+\[
+=\frac{20}{20+5}=80\%
+\]
+
+### D. Recall
+
+Recall measures how many customers who actually left were correctly identified.
+
+\[
+Recall=\frac{TP}{TP+FN}
+\]
+
+\[
+=\frac{20}{20+6}\approx76.92\%
+\]
+
+### E. F1 Score
+
+F1 Score combines precision and recall into one metric.
+
+\[
+F1=2\times\frac{Precision\times Recall}{Precision+Recall}
+\]
+
+A higher F1 Score indicates a better balance between precision and recall.
+
+### F. ROC Curve
+
+ROC stands for Receiver Operating Characteristic.
+
+It is a graph used to evaluate a classification model at different classification thresholds.
+
+- Y-axis: True Positive Rate.
+- X-axis: False Positive Rate.
+
+Your manual explains the ROC curve on page 7. Assignment_10
+
+---
+
+## 9. Other Important Terms
+
+Your manual also mentions these terms.
+
+### A. Null Error Rate
+
+Null error rate measures how often a model would make incorrect predictions if it always predicted the majority class.
+
+For example, suppose:
+- 800 customers stayed.
+- 200 customers left.
+
+If the model always predicts "Stayed", it will be correct for 800 customers and incorrect for 200.
+
+\[
+Null\ Error\ Rate=\frac{200}{1000}=20\%
+\]
+
+### B. Accuracy Paradox
+
+Accuracy paradox occurs when a model has high accuracy but performs poorly at identifying the minority class.
+
+For example, if 95% of customers stay, a model that always predicts "Stay" achieves 95% accuracy but cannot identify customers who leave.
+
+This is why we should also examine precision, recall and F1 Score.
+
+---
+
+## 10. Overall Workflow of Assignment 10
+
+This is the practical workflow you should remember:
+
+1. **Import libraries:** Import Pandas, NumPy, Matplotlib and TensorFlow/Keras.
+2. **Load dataset:** Read the bank customer CSV file.
+3. **Explore dataset:** Check columns, missing values and data types.
+4. **Preprocess data:** Remove unnecessary columns and handle categorical variables.
+5. **Separate features and target:** X contains customer information; y contains `Exited`.
+6. **Train-test split:** Divide the dataset into training and testing sets.
+7. **Normalize data:** Scale numerical features using training data statistics.
+8. **Build ANN:** Create input, hidden and output layers.
+9. **Compile model:** Select optimizer, loss function and evaluation metrics.
+10. **Train model:** Fit the neural network using training data.
+11. **Predict:** Generate predictions for the test data.
+12. **Evaluate:** Calculate accuracy and display the confusion matrix.
+
+### Important preprocessing detail
+
+The dataset contains categorical features such as Geography and Gender. These must be converted into numerical representations before training the neural network.
+
+Also, identifier columns such as CustomerId and RowNumber generally should not be used as predictive features.
+
+---
+
+# 11. Important Viva Questions and Answers
+
+### Artificial Neural Network
+
+**Q1. What is an Artificial Neural Network?**  
+ANN is a machine learning model inspired by the human brain that consists of interconnected artificial neurons.
+
+**Q2. Why is it called a neural network?**  
+Because it contains interconnected nodes arranged in layers, similar to neurons in the human brain.
+
+**Q3. What are the three main layers of ANN?**  
+Input layer, hidden layer and output layer.
+
+**Q4. What is an input layer?**  
+It receives input features from the dataset.
+
+**Q5. What is a hidden layer?**  
+It performs calculations and learns patterns from the input data.
+
+**Q6. What is an output layer?**  
+It produces the final prediction of the neural network.
+
+**Q7. What are weights in ANN?**  
+Weights are learnable parameters that determine the influence of inputs on a neuron's output.
+
+**Q8. What is an epoch?**  
+One complete pass of the training dataset through the neural network.
+
+**Q9. What is an activation function?**  
+It determines the output of a neuron and helps the network learn complex patterns.
+
+**Q10. What is backpropagation?**  
+It is the process of calculating how prediction errors affect the network's weights so they can be adjusted.
+
+### Keras and TensorFlow
+
+**Q11. What is TensorFlow?**  
+TensorFlow is an open-source framework used to build and train machine learning models.
+
+**Q12. What is Keras?**  
+Keras is a high-level API used to build and train neural networks easily.
+
+**Q13. What is the difference between Keras and TensorFlow?**  
+TensorFlow is a machine learning framework, while Keras provides a simpler interface for building neural networks.
+
+### Normalization
+
+**Q14. What is normalization?**  
+Normalization is a preprocessing technique that scales numerical data into a common range.
+
+**Q15. Why is normalization important?**  
+It prevents features with larger numerical ranges from dominating the learning process.
+
+**Q16. What is standardization?**  
+Standardization transforms data using its mean and standard deviation.
+
+### Confusion Matrix
+
+**Q17. What is a confusion matrix?**  
+It is a table used to evaluate a classification model by comparing actual and predicted values.
+
+**Q18. What is True Positive?**  
+The model predicts positive, and the actual value is also positive.
+
+**Q19. What is True Negative?**  
+The model predicts negative, and the actual value is also negative.
+
+**Q20. What is False Positive?**  
+The model predicts positive, but the actual value is negative.
+
+**Q21. What is False Negative?**  
+The model predicts negative, but the actual value is positive.
+
+**Q22. What is accuracy?**  
+Accuracy is the ratio of correct predictions to total predictions.
+
+**Q23. What is precision?**  
+Precision measures how many predicted positive cases are actually positive.
+
+**Q24. What is recall?**  
+Recall measures how many actual positive cases are correctly identified.
+
+**Q25. What is F1 Score?**  
+F1 Score is the harmonic mean of precision and recall.
+
+**Q26. What is ROC Curve?**  
+ROC is a graph that evaluates a classifier at different thresholds using true positive and false positive rates.
+
+---
+
+# 12. Answers to Assignment Questions
+
+Your manual lists five assignment questions on page 7. Assignment_10
+
+**Q1. What is Normalization?**  
+Normalization is a preprocessing technique used to scale numerical values into a common range, generally 0 to 1.
+
+**Q2. What is Standardization?**  
+Standardization transforms data using its mean and standard deviation so that it has approximately zero mean and unit variance.
+
+**Q3. Explain Confusion Matrix.**  
+A confusion matrix is a table used to evaluate a classification model using True Positive, True Negative, False Positive and False Negative values.
+
+**Q4. Define Classification Accuracy, Misclassification Rate and Precision.**
+
+- **Classification Accuracy:** Ratio of correct predictions to total predictions.
+- **Misclassification Rate:** Ratio of incorrect predictions to total predictions.
+- **Precision:** Ratio of correctly predicted positive cases to all predicted positive cases.
+
+**Q5. Give one example of a Confusion Matrix.**
+
+Suppose a model predicts whether customers will leave a bank:
+
+| | Actual Left | Actual Stayed |
+|---|---:|---:|
+| Predicted Left | 20 (TP) | 5 (FP) |
+| Predicted Stayed | 6 (FN) | 69 (TN) |
+
+This matrix shows 89 correct predictions and 11 incorrect predictions out of 100.
+
+---
+
+## 13. Important Points to Remember
+
+| Topic | Remember this |
+|---|---|
+| Assignment | Bank Customer Churn Prediction |
+| ML type | Supervised Learning |
+| Problem type | Binary Classification |
+| Dataset size | 10,000 records |
+| Target variable | `Exited` |
+| 0 | Customer stayed |
+| 1 | Customer left |
+| ANN | Artificial Neural Network |
+| Main layers | Input, Hidden, Output |
+| Weights | Learnable parameters |
+| TensorFlow | ML framework |
+| Keras | High-level neural network API |
+| Normalization | Scales data |
+| Standardization | Uses mean and standard deviation |
+| Confusion Matrix | Evaluates classification |
+| Accuracy | Correct predictions |
+| Precision | Correctness of positive predictions |
+| Recall | Ability to identify actual positives |
+| F1 Score | Balance of precision and recall |
+
+### Important clarification about your manual
+
+Your assignment asks you to build a neural-network classifier and identify points of improvement, but the PDF mainly explains ANN architecture and confusion matrices. It does not provide a specific neural-network architecture, code, optimizer or training configuration. Assignment_10
+
+The additional ANN training concepts above help you understand how to implement the assignment.
+
+**Next step:** We can write the complete Python implementation using TensorFlow/Keras, including data preprocessing, normalization, ANN construction, training, accuracy calculation and confusion matrix—with comments explaining every important line.

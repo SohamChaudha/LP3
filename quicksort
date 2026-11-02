@@ -1,0 +1,596 @@
+# DAA Assignment 5 – Quick Sort Using Deterministic and Randomized Variants
+
+I've analysed your complete 4-page practical manual.
+
+**Assignment title:** Write a program for analysis of Quick Sort using Deterministic and Randomized Variants.
+
+**Objective:** To analyse the time and space complexity of Quick Sort using both approaches. DAA-Assignment No 5
+
+This assignment is about understanding two ways of selecting a pivot element in Quick Sort and how pivot selection affects sorting performance.
+
+We'll follow the same preparation format as your previous assignments.
+
+---
+
+# 1. What is this assignment all about?
+
+First, let's understand Quick Sort.
+
+Imagine you have an unsorted array:
+
+```text
+[8, 3, 1, 7, 0, 10, 2]
+```
+
+You want to arrange these numbers in ascending order.
+
+Quick Sort is a sorting algorithm that uses the **Divide and Conquer** technique.
+
+It works by:
+1. Selecting an element called the pivot.
+2. Placing smaller elements on the left side of the pivot.
+3. Placing larger elements on the right side.
+4. Applying the same process recursively to both sides.
+5. Continuing until the entire array is sorted.
+
+### What is a Pivot?
+
+A pivot is an element selected from the array to divide it into two parts.
+
+For example:
+
+```text
+Array: [8, 3, 1, 7, 0, 10, 2]
+
+Pivot = 7
+```
+
+After partitioning:
+
+```text
+[3, 1, 0, 2]  7  [8, 10]
+```
+
+- Left side contains elements smaller than the pivot.
+- Right side contains elements greater than the pivot.
+
+The same process is repeated on both sides.
+
+Eventually:
+
+```text
+[0, 1, 2, 3, 7, 8, 10]
+```
+
+The array is sorted!
+
+---
+
+# 2. What is Deterministic Quick Sort?
+
+Deterministic Quick Sort selects the pivot using a fixed rule.
+
+For example:
+- First element as pivot.
+- Last element as pivot.
+- Middle element as pivot.
+
+The pivot selection does not involve randomness.
+
+**Example:**
+
+```python
+arr = [8, 3, 1, 7, 0, 10, 2]
+
+pivot = arr[-1]
+```
+
+Here, the last element (2) is always selected as the pivot.
+
+### Disadvantage
+
+If the input array is already sorted and we always select the last element as pivot, partitioning becomes highly unbalanced.
+
+This can result in O(n²) time complexity.
+
+---
+
+# 3. What is Randomized Quick Sort?
+
+Randomized Quick Sort is a variation of Quick Sort in which the pivot is selected randomly.
+
+Instead of always selecting the first or last element, we choose a random element as the pivot.
+
+Example:
+
+```python
+import random
+
+arr = [8, 3, 1, 7, 0, 10, 2]
+
+pivot_index = random.randint(0, len(arr) - 1)
+
+pivot = arr[pivot_index]
+```
+
+Here, the pivot can be any element in the array.
+
+### Why do we use Randomization?
+
+Suppose the input array is already sorted:
+
+```text
+[1, 2, 3, 4, 5, 6, 7]
+```
+
+If we always choose the last element as the pivot, we may get highly unbalanced partitions.
+
+But Randomized Quick Sort chooses a pivot randomly, reducing the likelihood of repeatedly getting highly unbalanced partitions.
+
+**Important:** Randomization improves expected performance, but it does not guarantee that the worst case will never happen.
+
+---
+
+# 4. Difference Between Deterministic and Randomized Quick Sort
+
+| Parameter | Deterministic Quick Sort | Randomized Quick Sort |
+|---|---|---|
+| Pivot selection | Fixed rule | Random selection |
+| Uses random numbers | No | Yes |
+| Average/Expected Time | O(n log n) | O(n log n) |
+| Worst-case Time | O(n²) | O(n²) |
+| Performance | Depends heavily on input and pivot rule | Less dependent on input arrangement |
+| Implementation | Simple | Slightly more complex |
+
+---
+
+# 5. Important Concepts You Must Understand
+
+## Q1. What is Divide and Conquer?
+
+Divide and Conquer is an algorithmic technique that divides a large problem into smaller subproblems, solves them independently and combines their results.
+
+Quick Sort uses this technique.
+
+## Q2. What is Partitioning?
+
+Partitioning is the process of rearranging an array around a pivot so that smaller elements are placed on one side and larger elements on the other.
+
+## Q3. What is Recursion?
+
+Recursion is a programming technique in which a function calls itself to solve smaller versions of a problem.
+
+## Q4. What is a Pivot Element?
+
+A pivot is the selected element used to divide an array into two partitions during Quick Sort.
+
+## Q5. What is a Balanced Partition?
+
+A balanced partition occurs when the pivot divides the array into two nearly equal parts.
+
+Example:
+
+```text
+[1, 2, 3, 4, 5, 6, 7]
+
+          4
+        /   \
+    [1,2,3] [5,6,7]
+```
+
+This is good because both partitions are nearly equal.
+
+## Q6. What is an Unbalanced Partition?
+
+An unbalanced partition occurs when one partition contains almost all elements and the other contains very few elements.
+
+Example:
+
+```text
+[1, 2, 3, 4, 5, 6, 7]
+
+  7
+ /
+[1, 2, 3, 4, 5, 6]
+```
+
+This can make Quick Sort inefficient.
+
+## Q7. What is a Randomized Algorithm?
+
+A randomized algorithm uses random numbers or random choices during its execution to make decisions.
+
+## Q8. What are the types of Randomized Algorithms?
+
+There are two main types:
+
+**1. Las Vegas Algorithm**
+- Always produces a correct result.
+- Running time depends on random choices.
+- Example: Randomized Quick Sort.
+
+**2. Monte Carlo Algorithm**
+- Has a bounded running time.
+- May produce an incorrect result with some probability.
+- Example: Randomized algorithms for primality testing.
+
+Your manual discusses both types on pages 1 and 2. DAA-Assignment No 5
+
+## Q9. Is Randomized Quick Sort a Las Vegas or Monte Carlo algorithm?
+
+It is a Las Vegas algorithm because it always produces a correctly sorted array, although its running time depends on random pivot selection.
+
+## Q10. What is the difference between Las Vegas and Monte Carlo algorithms?
+
+Las Vegas algorithms always produce correct results but have variable running times, whereas Monte Carlo algorithms have bounded running times but may produce incorrect results with some probability.
+
+---
+
+# 6. Time and Space Complexity
+
+This is one of the most important sections for your viva.
+
+Quick Sort's performance depends on how the pivot divides the array.
+
+### A. Best Case
+
+When the pivot divides the array into two nearly equal parts.
+
+\[
+T(n)=2T(n/2)+O(n)
+\]
+
+Time Complexity:
+
+\[
+\boxed{O(n\log n)}
+\]
+
+### B. Average Case
+
+When partitions are reasonably balanced on average.
+
+Time Complexity:
+
+\[
+\boxed{O(n\log n)}
+\]
+
+### C. Worst Case
+
+When the pivot repeatedly becomes the smallest or largest element.
+
+For example:
+
+```text
+[1, 2, 3, 4, 5, 6, 7]
+```
+
+If we always choose the last element as pivot, the partitions can become:
+
+```text
+0 elements | Pivot | 6 elements
+
+0 elements | Pivot | 5 elements
+
+0 elements | Pivot | 4 elements
+```
+
+Time Complexity:
+
+\[
+\boxed{O(n^2)}
+\]
+
+### Complexity Comparison
+
+| Case | Deterministic Quick Sort | Randomized Quick Sort |
+|---|---|---|
+| Best | O(n log n) | O(n log n) |
+| Average / Expected | O(n log n) | O(n log n) |
+| Worst | O(n²) | O(n²) |
+
+**Important viva point:** Randomized Quick Sort does not eliminate the worst case. It makes repeatedly getting bad partitions unlikely, giving an expected time complexity of O(n log n).
+
+### Space Complexity
+
+Quick Sort is an in-place sorting algorithm because partitioning is generally performed within the original array.
+
+However, recursive function calls require stack memory.
+
+| Case | Auxiliary Space |
+|---|---|
+| Best | O(log n) |
+| Average / Expected | O(log n) |
+| Worst | O(n) |
+
+---
+
+# 7. Important Viva Questions with Answers
+
+## A. Basic Questions
+
+**Q1. What is Quick Sort?**
+
+Quick Sort is a sorting algorithm that uses the Divide and Conquer technique to arrange elements in ascending or descending order.
+
+**Q2. Which technique does Quick Sort use?**
+
+Divide and Conquer.
+
+**Q3. What is a pivot?**
+
+A pivot is an element used to divide the array into two partitions.
+
+**Q4. What is partitioning?**
+
+Partitioning rearranges elements so that smaller elements appear before the pivot and larger elements appear after it.
+
+**Q5. What is Deterministic Quick Sort?**
+
+It is a Quick Sort implementation that selects its pivot using a fixed rule.
+
+**Q6. What is Randomized Quick Sort?**
+
+It is a Quick Sort implementation that selects its pivot randomly.
+
+**Q7. Why is Randomized Quick Sort preferred?**
+
+Because random pivot selection reduces the likelihood of repeatedly producing highly unbalanced partitions.
+
+**Q8. Does Randomized Quick Sort always perform better?**
+
+No. It has better expected performance against consistently bad input arrangements, but it can still encounter the worst case.
+
+**Q9. Is Quick Sort an in-place sorting algorithm?**
+
+Yes, standard Quick Sort performs partitioning within the original array, requiring only recursion stack space.
+
+**Q10. Is Quick Sort a stable sorting algorithm?**
+
+No. Standard Quick Sort is unstable because equal elements may change their relative order.
+
+## B. Randomized Algorithm Questions
+
+**Q11. What is a randomized algorithm?**
+
+An algorithm that uses random choices during execution to make decisions.
+
+**Q12. What is a Las Vegas algorithm?**
+
+An algorithm that always produces a correct result, but its running time may depend on random choices.
+
+**Q13. What is a Monte Carlo algorithm?**
+
+An algorithm that has a bounded running time but may produce an incorrect result with some probability.
+
+**Q14. Which type is Randomized Quick Sort?**
+
+Las Vegas algorithm.
+
+**Q15. What is the main advantage of randomized algorithms?**
+
+They can reduce the likelihood of consistently poor performance and make algorithms less dependent on particular input arrangements.
+
+**Q16. Does randomization guarantee O(n log n) time in every execution?**
+
+No. It guarantees O(n log n) expected time, but a particular execution can still take O(n²).
+
+**Q17. Give applications of randomized algorithms.**
+
+Cryptography, load balancing, primality testing, hashing, sorting and searching.
+
+## C. Complexity Questions
+
+**Q18. What is the best-case time complexity of Quick Sort?**
+
+O(n log n).
+
+**Q19. What is the average-case time complexity?**
+
+O(n log n).
+
+**Q20. What is the worst-case time complexity?**
+
+O(n²).
+
+**Q21. Why does Quick Sort have O(n²) worst-case complexity?**
+
+Because repeatedly selecting the smallest or largest element as pivot creates highly unbalanced partitions.
+
+**Q22. What is the expected time complexity of Randomized Quick Sort?**
+
+O(n log n).
+
+**Q23. What is the worst-case complexity of Randomized Quick Sort?**
+
+O(n²).
+
+**Q24. What is the space complexity of Quick Sort?**
+
+O(log n) on average and O(n) in the worst case due to recursive calls.
+
+**Q25. What is the time complexity of partitioning?**
+
+O(n), because each element in the current partition is examined a constant number of times.
+
+---
+
+# 8. Tricky Viva Questions
+
+These questions test whether you understand the actual working of Quick Sort.
+
+**Q26. What happens if all elements in an array are identical?**
+
+With a basic two-way partition scheme, partitions may become highly unbalanced, resulting in O(n²) time complexity.
+
+**Q27. Can we use the first element as a pivot?**
+
+Yes. However, it may produce unbalanced partitions for certain input arrangements.
+
+**Q28. What happens if the pivot is the middle element?**
+
+It may produce balanced partitions, but selecting the middle element does not always guarantee balanced partitions.
+
+**Q29. Why is Quick Sort generally faster than Merge Sort in practice?**
+
+Quick Sort often has good cache performance and low additional memory requirements because it performs partitioning in place.
+
+**Q30. What is the difference between worst-case and expected time complexity?**
+
+Worst-case complexity describes the maximum time an algorithm can take, whereas expected complexity describes the average running time over its random choices.
+
+**Q31. Can Randomized Quick Sort sort an already sorted array efficiently?**
+
+Generally, yes. Random pivot selection reduces the likelihood of repeatedly creating unbalanced partitions.
+
+**Q32. What is an indicator random variable?**
+
+It is a random variable that takes only two values: 1 if an event occurs and 0 otherwise.
+
+Your manual uses indicator random variables to analyse the number of comparisons in Randomized Quick Sort. DAA-Assignment No 5
+
+**Q33. Why is Randomized Quick Sort called a Las Vegas algorithm?**
+
+Because it always sorts the array correctly, regardless of which random pivots are selected.
+
+---
+
+# 9. Assignment Questions from Your Manual
+
+Your manual contains five assignment questions.
+
+### Q1. Explain the difference between Quick Sort and Randomized Quick Sort. What is Deterministic Quick Sort?
+
+**Deterministic Quick Sort:** Selects a pivot using a fixed rule, such as the first or last element.
+
+**Randomized Quick Sort:** Selects the pivot randomly from the available elements.
+
+The main difference is that Randomized Quick Sort uses randomness to reduce the likelihood of consistently unbalanced partitions.
+
+### Q2. Why is Randomized Quick Sort more preferable? Write its pseudocode.
+
+**Advantages:**
+1. Reduces dependence on the original input arrangement.
+2. Provides O(n log n) expected time complexity.
+3. Reduces the likelihood of repeatedly selecting poor pivots.
+4. Works efficiently for different input arrangements.
+
+**Pseudocode:**
+
+```text
+RANDOMIZED-QUICKSORT(A, low, high)
+
+    If low < high:
+
+        Choose a random pivot
+
+        Exchange pivot with last element
+
+        p = PARTITION(A, low, high)
+
+        RANDOMIZED-QUICKSORT(A, low, p-1)
+
+        RANDOMIZED-QUICKSORT(A, p+1, high)
+```
+
+### Q3. Discuss complexity analysis of Randomized Quick Sort. What is its worst-case complexity? Comment on stability.
+
+**Time Complexity:**
+
+| Case | Complexity |
+|---|---|
+| Best | O(n log n) |
+| Expected | O(n log n) |
+| Worst | O(n²) |
+
+The expected complexity is O(n log n) because random pivot selection generally produces reasonably balanced partitions.
+
+**Worst Case:** O(n²), when the pivot repeatedly creates highly unbalanced partitions.
+
+**Stability:** Quick Sort is generally unstable because equal elements may change their relative order during partitioning.
+
+### Q4. Discuss advantages of randomized algorithms. How do we analyse them?
+
+**Advantages:**
+1. Reduce dependence on input arrangement.
+2. Often improve expected performance.
+3. Can simplify certain algorithms.
+4. Help avoid consistently poor choices.
+
+**Analysis:**
+
+Randomized algorithms are analysed by considering their possible random choices and calculating their expected running time or probability of producing an incorrect result.
+
+For example, Randomized Quick Sort has expected time complexity O(n log n).
+
+### Q5. Which is better: Randomized Quick Sort or Merge Sort? Why?
+
+| Parameter | Randomized Quick Sort | Merge Sort |
+|---|---|---|
+| Technique | Divide and Conquer | Divide and Conquer |
+| Best Time | O(n log n) | O(n log n) |
+| Average Time | O(n log n) | O(n log n) |
+| Worst Time | O(n²) | O(n log n) |
+| Auxiliary Space | O(log n) expected | O(n) |
+| Stable | No | Yes |
+| In-place | Generally yes | Generally no for arrays |
+
+**Answer:** Neither is universally better.
+
+- Randomized Quick Sort is generally preferred for in-memory array sorting when low auxiliary memory and practical performance are important.
+- Merge Sort is preferred when stability and guaranteed O(n log n) worst-case time are important.
+
+---
+
+# 10. Quick Revision Before Your Practical
+
+Memorize this table before your viva.
+
+| Topic | Answer |
+|---|---|
+| Algorithm | Quick Sort |
+| Technique | Divide and Conquer |
+| Pivot | Partitioning element |
+| Deterministic | Fixed pivot selection |
+| Randomized | Random pivot selection |
+| Randomized Algorithm Type | Las Vegas |
+| Best Time | O(n log n) |
+| Average/Expected Time | O(n log n) |
+| Worst Time | O(n²) |
+| Average Auxiliary Space | O(log n) |
+| Worst Auxiliary Space | O(n) |
+| Stability | Unstable |
+| Partition Complexity | O(n) |
+
+### 5 questions you should definitely prepare
+
+1. What is Quick Sort and how does it work?
+2. What is the difference between Deterministic and Randomized Quick Sort?
+3. Why do we use a random pivot?
+4. Explain the best, average and worst-case complexity.
+5. What is the difference between Las Vegas and Monte Carlo algorithms?
+
+---
+
+## My recommendation for Assignment 5
+
+This assignment is more focused on **algorithm analysis and comparison** than complicated calculations.
+
+Give maximum attention to:
+
+1. How partitioning works.
+2. How pivot selection affects performance.
+3. Difference between deterministic and randomized approaches.
+4. Best, average and worst-case complexity.
+5. Las Vegas versus Monte Carlo algorithms.
+
+One important point: **Randomized Quick Sort does not guarantee O(n log n) in every execution. Its expected complexity is O(n log n), while its worst-case complexity remains O(n²).**
+
+### Next step
+
+We can now implement both versions in Python:
+- Deterministic Quick Sort.
+- Randomized Quick Sort.
+
+I'll explain both programs line by line using comments, just as we did for your previous assignments.

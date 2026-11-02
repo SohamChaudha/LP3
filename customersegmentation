@@ -1,0 +1,626 @@
+# ML Assignment 12: Customer Segmentation Using K-Means Clustering
+
+Let's understand your fifth ML assignment.
+
+**Title:** Implement K-Means Clustering / Hierarchical Clustering on the sales dataset and determine the number of clusters using the Elbow Method.
+
+This assignment is about grouping customers according to their characteristics and shopping behaviour.
+
+For example, a shopping mall may have:
+- Customers who earn less and spend less.
+- Customers who earn more and spend more.
+- Customers who earn more but spend less.
+- Customers who earn less but spend more.
+
+We want a machine learning algorithm to identify these groups automatically.
+
+Your manual primarily demonstrates **K-Means Clustering** and the Elbow Method. Although Hierarchical Clustering is mentioned in the title, the detailed implementation in the PDF focuses on K-Means. Assignment_12
+
+---
+
+## 1. What is this assignment all about?
+
+Imagine a shopping mall has information about 200 customers.
+
+For every customer, we know:
+- Age
+- Gender
+- Annual income
+- Spending score
+
+The mall wants to understand its customers better.
+
+Instead of manually grouping customers, we use a machine learning algorithm to automatically create groups based on similarities.
+
+This process is called **Customer Segmentation**.
+
+### What type of Machine Learning is this?
+
+**Unsupervised Learning – Clustering**
+
+- **Unsupervised Learning:** The model works with data that does not have predefined labels.
+- **Clustering:** It groups similar data points together.
+
+### Difference between supervised and unsupervised learning
+
+| Supervised Learning | Unsupervised Learning |
+|---|---|
+| Uses labelled data | Uses unlabelled data |
+| Has a target variable | No target variable is required |
+| Predicts known categories or values | Discovers patterns or groups |
+| Example: Spam detection | Example: Customer segmentation |
+
+**Remember:** In clustering, we don't tell the model which customer belongs to which group. The algorithm discovers the groups from the data.
+
+### Visual understanding
+
+The diagram on page 1 of your manual illustrates clustering:
+
+- On the left, data points are scattered without groups.
+- On the right, similar data points are grouped into separate clusters.
+
+This is exactly what clustering does. Assignment_12
+
+---
+
+## 2. Understanding the Dataset
+
+Your manual describes five customer features: Assignment_12
+
+| Column | Meaning |
+|---|---|
+| Customer ID | Unique identification number of a customer |
+| Gender | Customer's gender |
+| Age | Customer's age |
+| Annual Income (k$) | Customer's annual income in thousand dollars |
+| Spending Score (1–100) | Score assigned based on customer behaviour and spending nature |
+
+The manual's example uses 200 customer records from a Mall Customers dataset. Assignment_12
+
+### What is Spending Score?
+
+Spending Score is a value between 1 and 100 that represents a customer's spending behaviour.
+
+For example:
+- Score 20 → Relatively low spending.
+- Score 50 → Medium spending.
+- Score 90 → Relatively high spending.
+
+### Why do we use Customer Segmentation?
+
+It helps businesses understand customer behaviour and create suitable marketing strategies.
+
+Your manual gives these applications of clustering:
+
+1. Marketing – Group customers and provide suitable offers.
+2. Real Estate – Group properties based on value and importance.
+3. Bookstores and Libraries – Group books based on similarities.
+4. Document Analysis – Group documents according to their topics. Assignment_12
+
+---
+
+## 3. What is Clustering?
+
+Clustering is an unsupervised learning technique that divides data into smaller groups based on similarities.
+
+The main idea is:
+
+**Data points belonging to the same cluster should be similar to each other, while data points belonging to different clusters should be relatively different.**
+
+For example:
+
+Suppose we have these customers:
+
+| Customer | Annual Income | Spending Score |
+|---|---:|---:|
+| A | 20 | 15 |
+| B | 22 | 18 |
+| C | 80 | 85 |
+| D | 85 | 90 |
+
+Customers A and B have similar income and spending behaviour, so they may belong to one cluster.
+
+Customers C and D may belong to another cluster.
+
+The algorithm discovers these groups automatically.
+
+---
+
+## 4. K-Means Clustering
+
+K-Means is an unsupervised machine learning algorithm that divides a dataset into a predefined number of clusters.
+
+Here, **K represents the number of clusters** we want to create.
+
+For example:
+- K = 2 → Creates two clusters.
+- K = 3 → Creates three clusters.
+- K = 5 → Creates five clusters.
+
+According to your manual, K-Means is a centroid-based algorithm. Each cluster has a centroid, and the algorithm tries to reduce the distance between data points and their respective cluster centroids. Assignment_12
+
+### What is a Centroid?
+
+A centroid is the central point or average position of all the data points belonging to a cluster.
+
+Imagine a cluster contains three customers with these coordinates:
+
+| Customer | Income | Spending Score |
+|---|---:|---:|
+| A | 20 | 30 |
+| B | 30 | 40 |
+| C | 40 | 50 |
+
+The centroid is calculated by taking the average of each feature:
+
+\[
+Centroid_X=\frac{20+30+40}{3}=30
+\]
+
+\[
+Centroid_Y=\frac{30+40+50}{3}=40
+\]
+
+Therefore, the centroid is:
+
+\[
+(30,40)
+\]
+
+### How does K-Means work?
+
+K-Means follows these steps:
+
+**Step 1: Choose K**
+
+Decide how many clusters you want to create.
+
+For example, K = 3.
+
+**Step 2: Initialize Centroids**
+
+The algorithm selects three initial centroids.
+
+**Step 3: Assign Data Points**
+
+Each data point is assigned to its nearest centroid.
+
+**Step 4: Recalculate Centroids**
+
+The algorithm calculates the new centroid of each cluster using the average of its assigned points.
+
+**Step 5: Repeat**
+
+It repeats the assignment and centroid calculation steps until the centroids stop changing significantly or another stopping condition is reached.
+
+### Simple example
+
+Suppose a mall has six customers:
+
+| Customer | Annual Income | Spending Score |
+|---|---:|---:|
+| A | 20 | 20 |
+| B | 25 | 25 |
+| C | 30 | 30 |
+| D | 80 | 80 |
+| E | 85 | 85 |
+| F | 90 | 90 |
+
+If we choose K = 2, K-Means may create:
+
+- Cluster 1: A, B, C
+- Cluster 2: D, E, F
+
+The algorithm groups customers with similar income and spending scores.
+
+**Remember:** K-Means repeatedly assigns points to the nearest centroid and recalculates the centroids.
+
+---
+
+## 5. What is WCSS?
+
+WCSS stands for **Within-Cluster Sum of Squares**.
+
+It measures the total squared distance between data points and their respective cluster centroids.
+
+In simple words, WCSS tells us how closely the data points are grouped around their cluster centres.
+
+\[
+WCSS=\sum_{i=1}^{K}\sum_{x\in C_i}
+\|x-\mu_i\|^2
+\]
+
+Where:
+- K = Number of clusters.
+- \(C_i\) = Data points belonging to cluster i.
+- \(x\) = A data point.
+- \(\mu_i\) = Centroid of that cluster.
+
+### Why is WCSS important?
+
+We use WCSS to determine a suitable number of clusters.
+
+Generally:
+- Smaller WCSS means data points are closer to their centroids.
+- Larger WCSS means data points are farther from their centroids.
+
+When we increase the number of clusters, WCSS usually decreases because each cluster contains fewer points.
+
+However, choosing too many clusters is not always useful.
+
+This is why we use the Elbow Method.
+
+---
+
+## 6. Elbow Method
+
+The Elbow Method is used to determine a suitable number of clusters (K) for K-Means.
+
+Your manual calculates WCSS for different K values and plots the results. Assignment_12
+
+### How does it work?
+
+1. Start with K = 1.
+2. Calculate WCSS.
+3. Increase K to 2 and calculate WCSS again.
+4. Continue for different K values, such as 1 to 10.
+5. Plot K values on the X-axis and WCSS on the Y-axis.
+6. Identify the point where the WCSS reduction starts becoming much smaller.
+
+That point resembles an elbow in a human arm, so it is called the **Elbow Method**.
+
+### Example
+
+Suppose we obtain these values:
+
+| Number of clusters (K) | WCSS |
+|---:|---:|
+| 1 | 270000 |
+| 2 | 180000 |
+| 3 | 105000 |
+| 4 | 73000 |
+| 5 | 45000 |
+| 6 | 38000 |
+| 7 | 31000 |
+
+Notice that WCSS decreases significantly initially, but after K = 5, the reduction becomes smaller.
+
+Therefore, K = 5 may be a suitable choice.
+
+### What does your manual conclude?
+
+Your manual's Elbow Graph on page 5 shows that after K = 5, the reduction in WCSS becomes relatively small.
+
+Therefore, it selects:
+
+\[
+\boxed{K=5}
+\]
+
+The manual then creates five clusters using K-Means. Assignment_12
+
+**Important:** The elbow is a practical way to select K, not a mathematical guarantee that the chosen K is the only correct answer.
+
+---
+
+## 7. Understanding the Five Customer Clusters
+
+After selecting K = 5, the manual fits the K-Means model and assigns each customer a cluster label.
+
+The cluster labels are added to a new column called `label`. Assignment_12
+
+The scatter plot on page 6 shows five different customer groups using:
+- X-axis: Annual Income.
+- Y-axis: Spending Score.
+- Different colours: Different cluster labels.
+
+Assignment_12
+
+We can understand the groups approximately like this:
+
+| Customer Group | Annual Income | Spending Score |
+|---|---|---|
+| Group 1 | Low | Low |
+| Group 2 | Low | High |
+| Group 3 | Medium | Medium |
+| Group 4 | High | Low |
+| Group 5 | High | High |
+
+### Why is this useful?
+
+The mall can use these groups to develop different marketing strategies.
+
+For example:
+- High income, high spending → Premium offers.
+- High income, low spending → Special promotions to encourage spending.
+- Low income, high spending → Loyalty rewards.
+- Low income, low spending → Budget-friendly offers.
+
+The cluster numbers themselves do not have fixed meanings. Their interpretation depends on the actual customer values in each group.
+
+---
+
+## 8. Understanding the 3D K-Means Clustering
+
+Your manual also demonstrates K-Means using three features:
+
+1. Age
+2. Annual Income
+3. Spending Score
+
+The selected features are shown on page 7. Assignment_12
+
+### Why use three features?
+
+In the earlier example, clustering is based on two features:
+- Annual Income
+- Spending Score
+
+In the 3D example, Age is added as another feature.
+
+This allows the algorithm to consider customer age while grouping customers.
+
+For example, two customers might have similar incomes and spending scores but very different ages. Including age can influence how they are grouped.
+
+**Remember:** More features provide more information, but they can also make clustering more difficult to interpret.
+
+---
+
+---
+
+## 9. What is Hierarchical Clustering?
+
+Your assignment title mentions both K-Means and Hierarchical Clustering, but the detailed theory and implementation in the manual cover K-Means only. There is no step-by-step Hierarchical Clustering implementation in the PDF. Assignment_12
+
+Here is a brief supplementary explanation so you understand the term.
+
+Hierarchical Clustering is an unsupervised learning algorithm that creates groups of data points in a hierarchical structure.
+
+It has two main approaches:
+
+**1. Agglomerative Clustering (Bottom-Up)**
+
+- Initially, every data point is treated as a separate cluster.
+- The two closest clusters are merged.
+- This process continues until the desired number of clusters is reached or all points form one cluster.
+
+**2. Divisive Clustering (Top-Down)**
+
+- Initially, all data points belong to one cluster.
+- The algorithm repeatedly divides clusters into smaller groups.
+
+### What is a Dendrogram?
+
+A dendrogram is a tree-like diagram used to visualize how clusters are merged or divided.
+
+By cutting the dendrogram at a selected height, we can determine the number of clusters.
+
+### K-Means vs Hierarchical Clustering
+
+| K-Means | Hierarchical Clustering |
+|---|---|
+| Centroid-based algorithm | Builds a hierarchy of clusters |
+| Requires K beforehand | Does not require K at the beginning |
+| Recalculates centroids | Merges or divides clusters |
+| Uses an elbow method to help select K | Can use a dendrogram to select clusters |
+| Suitable for larger datasets in many situations | Can be computationally expensive for large datasets |
+
+---
+
+## 10. Important Python Libraries
+
+Your manual uses these libraries for the practical.
+
+| Library | Purpose |
+|---|---|
+| NumPy | Numerical calculations |
+| Pandas | Reading and manipulating datasets |
+| Matplotlib | Creating graphs |
+| Seaborn | Data visualization |
+| Scikit-learn | Implementing K-Means clustering |
+
+### Important functions
+
+| Function | Purpose |
+|---|---|
+| `pd.read_excel()` | Reads an Excel dataset |
+| `data.head()` | Displays the first five rows |
+| `data.corr()` | Calculates correlations between numerical columns |
+| `KMeans()` | Creates a K-Means model |
+| `fit()` | Trains/fits the clustering model |
+| `predict()` | Assigns cluster labels |
+| `inertia_` | Returns WCSS |
+| `sns.scatterplot()` | Creates a scatter plot |
+
+---
+
+## 11. Time and Space Complexity of K-Means
+
+Let:
+- \(n\) = Number of data points.
+- \(k\) = Number of clusters.
+- \(d\) = Number of features.
+- \(i\) = Number of iterations.
+
+### Time Complexity
+
+\[
+O(n \times k \times d \times i)
+\]
+
+This is because the algorithm calculates distances between data points and cluster centroids repeatedly.
+
+### Space Complexity
+
+\[
+O(n \times d + k \times d)
+\]
+
+This accounts for storing the data and cluster centroids, excluding some implementation-specific overhead.
+
+---
+
+# 12. Important Viva Questions and Answers
+
+### Basic Machine Learning
+
+**Q1. What is Machine Learning?**  
+Machine Learning is a branch of AI that enables computers to learn patterns from data and make predictions.
+
+**Q2. What is unsupervised learning?**  
+Unsupervised learning is a type of ML in which a model finds patterns in data without predefined labels.
+
+**Q3. What is clustering?**  
+Clustering is an unsupervised learning technique that groups similar data points together.
+
+**Q4. What is customer segmentation?**  
+Customer segmentation is the process of dividing customers into groups based on similar characteristics or behaviour.
+
+### K-Means Clustering
+
+**Q5. What is K-Means?**  
+K-Means is an unsupervised algorithm that divides data into K clusters based on similarity.
+
+**Q6. What does K represent in K-Means?**  
+K represents the number of clusters to be created.
+
+**Q7. What is a centroid?**  
+A centroid is the central point representing a cluster, calculated using the mean of its data points.
+
+**Q8. How does K-Means work?**  
+It assigns data points to the nearest centroid and repeatedly recalculates centroids until the clusters stabilize.
+
+**Q9. What is WCSS?**  
+WCSS measures the sum of squared distances between data points and their respective cluster centroids.
+
+**Q10. What is the Elbow Method?**  
+It is a technique used to select a suitable number of clusters by plotting WCSS against different K values.
+
+**Q11. Why is it called the Elbow Method?**  
+Because the WCSS graph resembles an elbow at the point where its decrease starts slowing down.
+
+**Q12. What happens when K increases?**  
+WCSS generally decreases because more clusters allow data points to be closer to their centroids.
+
+**Q13. What are the limitations of K-Means?**  
+It requires choosing K beforehand and can be sensitive to initial centroids and feature scaling.
+
+### Hierarchical Clustering
+
+**Q14. What is Hierarchical Clustering?**  
+It is an unsupervised algorithm that groups data into a hierarchy of clusters.
+
+**Q15. What are the two types of Hierarchical Clustering?**  
+Agglomerative (bottom-up) and Divisive (top-down).
+
+**Q16. What is a dendrogram?**  
+A dendrogram is a tree-like diagram that shows how clusters are merged or divided.
+
+### Dataset and Applications
+
+**Q17. What is the objective of customer segmentation?**  
+To identify groups of customers with similar characteristics and spending behaviour.
+
+**Q18. Why is clustering useful in marketing?**  
+It helps businesses identify customer groups and provide suitable offers and discounts.
+
+**Q19. What is Spending Score?**  
+It is a score representing a customer's spending behaviour, generally ranging from 1 to 100 in this dataset.
+
+**Q20. Is K-Means supervised or unsupervised?**  
+K-Means is an unsupervised learning algorithm.
+
+---
+
+# 13. Assignment Questions
+
+Your PDF does not contain a separate section of written assignment questions. However, these are useful short answers based on its stated objective and theory.
+
+**Q1. What is clustering?**  
+Clustering is an unsupervised learning technique used to group similar data points together.
+
+**Q2. What is K-Means Clustering?**  
+K-Means is an unsupervised algorithm that divides a dataset into K clusters based on similarity.
+
+**Q3. What is a centroid?**  
+A centroid is the central point of a cluster, calculated using the mean of its data points.
+
+**Q4. What is WCSS?**  
+WCSS is the sum of squared distances between data points and their respective cluster centroids.
+
+**Q5. What is the Elbow Method?**  
+The Elbow Method helps determine a suitable number of clusters by plotting WCSS against different K values.
+
+**Q6. What is Hierarchical Clustering?**  
+Hierarchical Clustering is an unsupervised technique that creates a hierarchy of groups by merging or dividing clusters.
+
+**Q7. What is customer segmentation?**  
+It is the process of dividing customers into groups based on similarities in their characteristics and behaviour.
+
+---
+
+# 14. Important Points to Remember
+
+| Topic | Remember this |
+|---|---|
+| Assignment | Customer Segmentation |
+| ML type | Unsupervised Learning |
+| Technique | Clustering |
+| Main algorithm | K-Means |
+| K | Number of clusters |
+| Centroid | Centre of a cluster |
+| WCSS | Sum of squared distances from centroids |
+| Elbow Method | Helps select K |
+| K selected in manual | 5 |
+| Dataset example | 200 customers |
+| Features | Age, Income, Spending Score |
+| Hierarchical | Builds a hierarchy of clusters |
+| Dendrogram | Tree-like cluster diagram |
+| Application | Marketing and customer segmentation |
+
+---
+
+## 15. Important Corrections and Observations in Your Manual
+
+There are a few things you should be aware of before performing the practical.
+
+**1. Dataset name discrepancy**
+
+The title mentions `sales_data_sample.csv`, but the implementation reads:
+
+```python
+data = pd.read_excel("Mall_Customers.xlsx")
+```
+
+The manual's example uses the Mall Customers dataset containing 200 customer records. Make sure you use the dataset actually provided by your college.
+
+**2. Gender and Customer ID**
+
+Gender is categorical, so it needs numerical encoding if you want to include it in K-Means. Customer ID is an identifier and generally should not be used as a clustering feature.
+
+**3. Feature scaling**
+
+The manual does not demonstrate feature scaling. However, K-Means uses distances, so features with larger numerical ranges can dominate the clustering process. Standardization or normalization is generally recommended.
+
+**4. Hierarchical Clustering**
+
+Although it appears in the title, the manual does not provide its detailed implementation. The actual practical demonstrated is K-Means.
+
+**5. Number of clusters**
+
+The manual selects five clusters using the Elbow Method. This is the result shown in its example, not a universal answer for every customer dataset.
+
+---
+
+### What you should understand before the practical
+
+Focus especially on these six concepts:
+
+1. Difference between supervised and unsupervised learning.
+2. What clustering means.
+3. How K-Means works.
+4. What a centroid and WCSS are.
+5. How the Elbow Method selects K.
+6. How to interpret the five customer groups.
+
+**Next step:** We can implement the complete K-Means practical in Python, including dataset loading, finding WCSS, plotting the Elbow Graph, creating five clusters and visualizing customer segments—with comments explaining every line.

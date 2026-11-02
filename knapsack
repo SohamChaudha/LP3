@@ -1,0 +1,665 @@
+# DAA Assignment 3 – 0/1 Knapsack Using Dynamic Programming
+
+I've analysed your 6-page practical manual.
+
+**Assignment title:** Write a program to solve the 0/1 Knapsack Problem using Dynamic Programming.
+
+This assignment is about understanding how we select items to obtain the **maximum possible profit without exceeding the given weight capacity of a bag (knapsack).**
+
+We'll prepare it in the same format as your previous assignments:
+1. Understand what the assignment is about.
+2. Understand important theoretical concepts.
+3. Learn the algorithm with a numerical example.
+4. Prepare viva questions with easy answers.
+5. Understand time and space complexity.
+6. Cover the assignment questions from your manual.
+
+---
+
+# 1. What is this assignment all about?
+
+Imagine you are going on a trip and have a bag that can carry a maximum weight of 10 kg.
+
+You have the following items:
+
+| Item | Weight | Profit |
+|---|---:|---:|
+| A | 2 kg | ₹10 |
+| B | 3 kg | ₹20 |
+| C | 4 kg | ₹30 |
+| D | 5 kg | ₹40 |
+
+Your objective is to select items that give you the **maximum profit without exceeding the bag's capacity**.
+
+For example:
+- You can select A and D (weight = 7 kg, profit = ₹50).
+- You can select B and D (weight = 8 kg, profit = ₹60).
+- You can select A, B and C (weight = 9 kg, profit = ₹60).
+
+You need to find the combination that gives the maximum profit.
+
+This is called the **Knapsack Problem**.
+
+### Why is it called 0/1 Knapsack?
+
+Because every item has only two possibilities:
+
+- **1:** Select the complete item.
+- **0:** Do not select the item.
+
+You cannot select half of an item.
+
+For example, if an item weighs 5 kg, you must either take all 5 kg or leave it completely.
+
+Your manual specifically defines 0/1 Knapsack as a problem where items are indivisible. DAA-Assignment No 3
+
+---
+
+# 2. What is Dynamic Programming?
+
+Dynamic Programming (DP) is an algorithmic technique used to solve complex problems by breaking them into smaller subproblems and storing their results.
+
+Instead of calculating the same result repeatedly, we store previously calculated answers in a table.
+
+### Simple example
+
+Consider Fibonacci:
+
+\[
+F(n)=F(n-1)+F(n-2)
+\]
+
+When calculating Fibonacci recursively, some values are calculated repeatedly.
+
+Dynamic Programming stores those values so that we don't have to calculate them again.
+
+### Two important properties of Dynamic Programming
+
+**1. Overlapping Subproblems**
+
+It means the same smaller problems occur repeatedly during the solution of a larger problem.
+
+**2. Optimal Substructure**
+
+It means the optimal solution of a problem can be constructed using the optimal solutions of its smaller subproblems.
+
+These two properties are important for identifying problems that can be solved using Dynamic Programming. DAA-Assignment No 3
+
+---
+
+# 3. How does the 0/1 Knapsack Algorithm work?
+
+We solve this problem using a **2D Dynamic Programming Table**.
+
+Let's understand the process.
+
+Suppose we have:
+
+- Number of items = 4
+- Knapsack capacity = 5 kg
+
+| Item | Weight | Profit |
+|---|---:|---:|
+| 1 | 1 | 2 |
+| 2 | 2 | 3 |
+| 3 | 3 | 4 |
+| 4 | 4 | 5 |
+
+We want to obtain the maximum profit without exceeding 5 kg.
+
+### Step 1: Create a DP table
+
+We create a table with:
+
+- Rows = n + 1 (number of items + 1)
+- Columns = W + 1 (capacity + 1)
+
+Here:
+
+- Rows = 4 + 1 = 5
+- Columns = 5 + 1 = 6
+
+Initially, fill the first row and first column with zero.
+
+Why?
+
+- If there are zero items, maximum profit is zero.
+- If the capacity is zero, we cannot select any item.
+
+### Step 2: Apply the DP formula
+
+This is the most important formula in your assignment:
+
+\[
+DP[i][j] = \max(DP[i-1][j],\ value_i+DP[i-1][j-weight_i])
+\]
+
+There are two possibilities:
+
+**Case 1: Don't select the item**
+
+\[
+DP[i-1][j]
+\]
+
+We simply take the maximum profit from the previous row.
+
+**Case 2: Select the item**
+
+\[
+value_i+DP[i-1][j-weight_i]
+\]
+
+We add the item's profit to the best profit achievable with the remaining capacity.
+
+We select whichever gives us the maximum profit.
+
+**Important:** If the item's weight is greater than the current capacity, we cannot select it. In that case, we simply copy the value from the previous row.
+
+### Step 3: Fill the DP table
+
+The completed table will look like this:
+
+| Items / Capacity | 0 | 1 | 2 | 3 | 4 | 5 |
+|---|---:|---:|---:|---:|---:|---:|
+| 0 items | 0 | 0 | 0 | 0 | 0 | 0 |
+| Item 1 | 0 | 2 | 2 | 2 | 2 | 2 |
+| Item 2 | 0 | 2 | 3 | 5 | 5 | 5 |
+| Item 3 | 0 | 2 | 3 | 5 | 6 | 7 |
+| Item 4 | 0 | 2 | 3 | 5 | 6 | 7 |
+
+The last cell contains **7**, which represents the maximum possible profit.
+
+### Step 4: Identify selected items
+
+After filling the table, we trace backwards to identify which items were selected.
+
+- If the current row's value differs from the previous row's value, that item was selected.
+- If both values are equal, that item was not selected.
+
+For this example:
+
+- Item 3 is selected.
+- Item 2 is selected.
+- Item 1 and Item 4 are not selected.
+
+Total weight:
+
+\[
+2+3=5\ kg
+\]
+
+Total profit:
+
+\[
+3+4=7
+\]
+
+**Final Answer: Maximum profit = 7.**
+
+This is the same table-filling and backtracking approach described in your practical manual. DAA-Assignment No 3
+
+---
+
+# 4. Python Program – 0/1 Knapsack Using Dynamic Programming
+
+Here is a simple Python implementation with comments explaining every important line.
+
+```python
+# Function to solve 0/1 Knapsack
+def knapsack(weights, profits, capacity):
+
+    # Find the number of items
+    n = len(weights)
+
+    # Create a DP table with (n+1) rows and (capacity+1) columns
+    dp = [[0 for j in range(capacity + 1)]
+          for i in range(n + 1)]
+
+    # Traverse through all items
+    for i in range(1, n + 1):
+
+        # Check every possible capacity
+        for j in range(capacity + 1):
+
+            # If item weight is greater than current capacity
+            if weights[i - 1] > j:
+
+                # We cannot include the item
+                dp[i][j] = dp[i - 1][j]
+
+            else:
+
+                # Option 1: Exclude the current item
+                exclude = dp[i - 1][j]
+
+                # Option 2: Include the current item
+                include = profits[i - 1] + dp[i - 1][j - weights[i - 1]]
+
+                # Store the maximum profit
+                dp[i][j] = max(include, exclude)
+
+    # Print the DP table
+    print("DP Table:")
+
+    for row in dp:
+        print(row)
+
+    # The last cell contains maximum profit
+    print("\nMaximum Profit:", dp[n][capacity])
+
+    # Backtrack to identify selected items
+    selected = []
+    j = capacity
+
+    for i in range(n, 0, -1):
+
+        # If current value differs from previous row
+        if dp[i][j] != dp[i - 1][j]:
+
+            # Store the selected item number
+            selected.append(i)
+
+            # Reduce the remaining capacity
+            j = j - weights[i - 1]
+
+    # Display selected items
+    selected.reverse()
+
+    print("Selected Items:", selected)
+
+
+# Main program
+
+# Weight of each item
+weights = [1, 2, 3, 4]
+
+# Profit of each item
+profits = [2, 3, 4, 5]
+
+# Maximum capacity of knapsack
+capacity = 5
+
+# Call the function
+knapsack(weights, profits, capacity)
+```
+
+### Output
+
+```text
+DP Table:
+[0, 0, 0, 0, 0, 0]
+[0, 2, 2, 2, 2, 2]
+[0, 2, 3, 5, 5, 5]
+[0, 2, 3, 5, 6, 7]
+[0, 2, 3, 5, 6, 7]
+
+Maximum Profit: 7
+Selected Items: [2, 3]
+```
+
+### Understand the important code statements
+
+| Code | Explanation |
+|---|---|
+| `n = len(weights)` | Calculates the total number of items. |
+| `dp = [[0...]]` | Creates a 2D DP table initialized with zeros. |
+| `for i in range(1, n+1)` | Iterates through all items. |
+| `for j in range(capacity+1)` | Checks all possible capacities. |
+| `weights[i-1] > j` | Checks whether the item is too heavy. |
+| `exclude = dp[i-1][j]` | Calculates profit without selecting the item. |
+| `include = profits[i-1] + dp[i-1][j-weights[i-1]]` | Calculates profit after selecting the item. |
+| `max(include, exclude)` | Selects the option with maximum profit. |
+| `dp[n][capacity]` | Gives the maximum achievable profit. |
+| `selected.append(i)` | Stores the selected item number. |
+| `j = j - weights[i-1]` | Updates the remaining capacity. |
+
+**One important thing to understand:** We use `i-1` when accessing the weights and profits because Python lists start from index 0, whereas our DP table starts item numbering from row 1.
+
+---
+
+# 5. Time and Space Complexity
+
+This is another very important viva topic.
+
+### Time Complexity
+
+\[
+\boxed{O(n \times W)}
+\]
+
+Where:
+- n = Number of items.
+- W = Maximum knapsack capacity.
+
+**Why?**
+
+We create a DP table containing (n+1) rows and (W+1) columns.
+
+We visit every cell exactly once and perform a constant-time calculation.
+
+Therefore:
+
+\[
+O(n \times W)
+\]
+
+### Space Complexity
+
+\[
+\boxed{O(n \times W)}
+\]
+
+Because we store the entire 2D DP table.
+
+### Complexity summary
+
+| Operation | Complexity |
+|---|---|
+| Creating DP table | O(nW) |
+| Filling DP table | O(nW) |
+| Finding selected items | O(n) |
+| Overall Time | O(nW) |
+| Space | O(nW) |
+
+Your manual also derives the overall time complexity as θ(nW). DAA-Assignment No 3
+
+---
+
+# 6. Important Viva Questions with Answers
+
+## A. Basic Questions
+
+**Q1. What is Dynamic Programming?**
+
+Dynamic Programming is an algorithmic technique that solves problems by dividing them into smaller subproblems and storing their results to avoid repeated calculations.
+
+**Q2. What is the 0/1 Knapsack Problem?**
+
+It is an optimization problem in which we select items to maximize profit without exceeding the given weight capacity.
+
+**Q3. Why is it called 0/1 Knapsack?**
+
+Because each item can either be selected completely (1) or rejected completely (0).
+
+**Q4. Can we select half an item in 0/1 Knapsack?**
+
+No. Items are indivisible, so we must take the complete item or leave it.
+
+**Q5. What is the objective of the Knapsack Problem?**
+
+To maximize the total profit while keeping the total weight within the given capacity.
+
+**Q6. What are the two important properties of Dynamic Programming?**
+
+Overlapping subproblems and optimal substructure.
+
+**Q7. What are overlapping subproblems?**
+
+When the same smaller problems are solved repeatedly while solving a larger problem.
+
+**Q8. What is optimal substructure?**
+
+When an optimal solution can be constructed using optimal solutions of smaller subproblems.
+
+**Q9. What is a DP table?**
+
+A DP table stores the results of previously solved subproblems so that they can be reused.
+
+**Q10. What is the difference between 0/1 Knapsack and Fractional Knapsack?**
+
+In 0/1 Knapsack, we either take the complete item or leave it. In Fractional Knapsack, we can take a fraction of an item.
+
+## B. Algorithm-Related Questions
+
+**Q11. Which technique is used in this assignment?**
+
+Dynamic Programming.
+
+**Q12. Why do we use a 2D array?**
+
+To store the maximum profit for different numbers of items and different weight capacities.
+
+**Q13. Why do we initialize the first row with zero?**
+
+Because with zero available items, the maximum profit is always zero.
+
+**Q14. Why do we initialize the first column with zero?**
+
+Because with zero capacity, we cannot select any item.
+
+**Q15. What does the last cell of the DP table represent?**
+
+It represents the maximum profit that can be obtained using all items within the given capacity.
+
+**Q16. Why do we use the max() function?**
+
+To compare the profit obtained by including and excluding the current item.
+
+**Q17. How do we identify selected items?**
+
+By comparing the current DP cell with the cell directly above it while tracing backwards.
+
+**Q18. What happens if an item's weight exceeds the current capacity?**
+
+We cannot select that item, so we copy the value from the previous row.
+
+**Q19. Can Dynamic Programming solve the Knapsack Problem optimally?**
+
+Yes. The standard 0/1 Knapsack DP algorithm finds an optimal solution.
+
+## C. Complexity-Related Questions
+
+**Q20. What is the time complexity of 0/1 Knapsack using DP?**
+
+O(nW), where n is the number of items and W is the capacity.
+
+**Q21. What is its space complexity?**
+
+O(nW), because we store a 2D DP table.
+
+**Q22. Can we reduce the space complexity?**
+
+Yes. We can use a one-dimensional DP array and update it backwards, reducing auxiliary space to O(W).
+
+**Q23. What is the difference between polynomial and exponential complexity?**
+
+Polynomial complexity grows at a rate such as O(n²), whereas exponential complexity grows at a rate such as O(2ⁿ).
+
+**Q24. Is O(nW) polynomial time?**
+
+It is pseudo-polynomial time because W is a numerical capacity, not necessarily the number of bits needed to represent W.
+
+## D. Conceptual Questions
+
+**Q25. What are the applications of Dynamic Programming?**
+
+Matrix Chain Multiplication, Longest Common Subsequence and Travelling Salesman Problem.
+
+**Q26. What is the difference between Greedy and Dynamic Programming?**
+
+Greedy makes the best immediate choice at each step, whereas Dynamic Programming stores solutions to smaller subproblems to find an optimal overall solution.
+
+**Q27. What is Branch and Bound?**
+
+Branch and Bound is an optimization technique that explores possible solutions and eliminates branches that cannot produce a better result than the current best solution.
+
+**Q28. What is the difference between Dynamic Programming and Branch and Bound?**
+
+Dynamic Programming stores and reuses subproblem results, whereas Branch and Bound uses bounds to eliminate unpromising branches of the search space.
+
+**Q29. Which is better: Dynamic Programming or Branch and Bound?**
+
+It depends on the problem. Dynamic Programming is effective when subproblems overlap, while Branch and Bound can be useful when bounds eliminate many possible solutions.
+
+**Q30. Is 0/1 Knapsack an NP-Complete problem?**
+
+Yes. The decision version of 0/1 Knapsack is NP-Complete, while its optimization version is NP-Hard.
+
+---
+
+# 7. Assignment Questions from Your Manual
+
+Your manual contains six assignment questions.
+
+### Q1. Explain 0/1 Knapsack Problem with an example.
+
+0/1 Knapsack is an optimization problem in which we select items to maximize total profit without exceeding the capacity of the knapsack.
+
+For example, if a bag has a capacity of 5 kg, we must select items whose combined weight does not exceed 5 kg while maximizing profit.
+
+Each item can either be selected completely or rejected.
+
+### Q2. Compute the optimal solution using the given data.
+
+Your manual provides:
+
+Weights = {3, 4, 6, 5}
+
+Profits = {2, 3, 1, 4}
+
+Knapsack capacity = 8 kg.
+
+| Item | Weight | Profit |
+|---|---:|---:|
+| 1 | 3 | 2 |
+| 2 | 4 | 3 |
+| 3 | 6 | 1 |
+| 4 | 5 | 4 |
+
+**DP Table:**
+
+| Items / Capacity | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0 items | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| Item 1 | 0 | 0 | 0 | 2 | 2 | 2 | 2 | 2 | 2 |
+| Item 2 | 0 | 0 | 0 | 2 | 3 | 3 | 3 | 5 | 5 |
+| Item 3 | 0 | 0 | 0 | 2 | 3 | 3 | 3 | 5 | 5 |
+| Item 4 | 0 | 0 | 0 | 2 | 3 | 4 | 4 | 5 | 6 |
+
+Therefore:
+
+**Maximum Profit = 6**
+
+Selected items:
+- Item 1: Weight 3 kg, Profit 2.
+- Item 4: Weight 5 kg, Profit 4.
+
+Total weight:
+
+\[
+3+5=8\ kg
+\]
+
+Total profit:
+
+\[
+2+4=\boxed{6}
+\]
+
+### Q3. Write an algorithm/pseudocode for 0/1 Knapsack.
+
+```text
+START
+
+Input weights, profits, capacity W
+
+Create DP table of size (n+1) × (W+1)
+
+Initialize first row and column with 0
+
+For i = 1 to n:
+    For j = 0 to W:
+
+        If weight[i] > j:
+            DP[i][j] = DP[i-1][j]
+
+        Else:
+            DP[i][j] = max(
+                DP[i-1][j],
+                profit[i] + DP[i-1][j-weight[i]]
+            )
+
+Print DP[n][W]
+
+STOP
+```
+
+**Note:** Your manual's question says "using a greedy method", but the assignment title, objective and main algorithm specify Dynamic Programming. The pseudocode above follows the actual DP implementation.
+
+### Q4. Discuss time and space complexity.
+
+**Time Complexity:**
+
+\[
+O(nW)
+\]
+
+Every cell of the DP table is calculated once.
+
+**Space Complexity:**
+
+\[
+O(nW)
+\]
+
+We store a 2D table of size (n+1) × (W+1).
+
+### Q5. Can Knapsack be done in polynomial time? Explain.
+
+The 0/1 Knapsack problem can be solved using Dynamic Programming in O(nW) pseudo-polynomial time.
+
+However, it is not known to have a polynomial-time algorithm in the general input-size sense.
+
+### Q6. Discuss: 0/1 Knapsack is an NP-Complete problem.
+
+The decision version of 0/1 Knapsack is NP-Complete because:
+
+- It belongs to NP: A proposed selection can be verified in polynomial time.
+- It is NP-Hard: Other NP problems can be reduced to it in polynomial time.
+
+The optimization version is NP-Hard.
+
+---
+
+# 8. Quick Revision Before Your Practical
+
+| Topic | Important Answer |
+|---|---|
+| Algorithm | Dynamic Programming |
+| Problem Type | Optimization |
+| Knapsack Type | 0/1 |
+| Main Properties | Overlapping Subproblems, Optimal Substructure |
+| Data Structure | 2D Array |
+| DP Formula | max(Exclude, Include) |
+| Time Complexity | O(nW) |
+| Space Complexity | O(nW) |
+| Optimized Space | O(W) |
+| Decision Version | NP-Complete |
+| Optimization Version | NP-Hard |
+
+### 5 questions you should definitely prepare
+
+1. What is Dynamic Programming?
+2. Explain the 0/1 Knapsack Problem with an example.
+3. Explain the DP formula and how the table is filled.
+4. What is the difference between 0/1 and Fractional Knapsack?
+5. Explain time and space complexity.
+
+---
+
+## My recommendation for Assignment 3
+
+This assignment is slightly more calculation-oriented than Assignments 1 and 2.
+
+Focus especially on:
+
+- Understanding the DP formula.
+- Knowing why we use a 2D table.
+- Manually filling a DP table.
+- Identifying selected items through backtracking.
+- Understanding O(nW) complexity.
+
+**Most importantly, practise solving one numerical Knapsack problem without looking at the solution.** Your examiner may give you different weights, profits and capacity and ask you to construct the DP table.
+
+Send Assignment 4 when you're ready!

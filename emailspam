@@ -1,0 +1,573 @@
+# ML Assignment 9: Email Spam Detection Using KNN and SVM
+
+This assignment is about building a machine learning model that can automatically classify an email as **Spam** or **Not Spam**.
+
+Unlike Assignment 8, where we predicted a numerical Uber fare, here we predict a category. Therefore, this is a **Supervised Machine Learning – Binary Classification Problem**.
+
+Your manual asks you to implement two algorithms:
+1. K-Nearest Neighbors (KNN)
+2. Support Vector Machine (SVM)
+
+You must then analyze and compare their performance. Assignment_9
+
+---
+
+## 1. What is this assignment all about?
+
+Imagine you receive these emails:
+
+| Email | Content | Expected Output |
+|---|---|---|
+| Email 1 | Congratulations! You won a lottery. | Spam |
+| Email 2 | Your college assignment is due tomorrow. | Not Spam |
+| Email 3 | Claim your free gift now! | Spam |
+| Email 4 | Your meeting is scheduled for Monday. | Not Spam |
+
+We want to train a computer to identify whether an email is spam or not.
+
+The model learns from previously labelled emails and uses that knowledge to classify new emails.
+
+### What type of ML problem is this?
+
+**Supervised Learning – Binary Classification**
+
+- **Supervised Learning:** The model is trained using emails that already have labels.
+- **Classification:** The model predicts a category.
+- **Binary Classification:** There are exactly two possible categories.
+
+Your manual defines these two states:
+
+| Label | Meaning |
+|---|---|
+| 0 | Normal email (Not Spam) |
+| 1 | Abnormal email (Spam) |
+
+Assignment_9
+
+**Remember the difference from Assignment 8:**
+
+| Assignment 8 | Assignment 9 |
+|---|---|
+| Uber fare prediction | Email spam detection |
+| Regression | Classification |
+| Predicts a numerical value | Predicts a category |
+| Linear Regression, Random Forest | KNN, SVM |
+
+---
+
+## 2. Understanding the Dataset
+
+Your manual describes a dataset containing:
+
+- 5172 rows (emails).
+- 3002 columns.
+- First column: Email name/identifier.
+- Last column: Spam label.
+- Remaining 3000 columns: Word counts.
+
+Assignment_9
+
+Let's understand this with a simplified example.
+
+| Email | free | offer | meeting | project | Spam |
+|---|---:|---:|---:|---:|---:|
+| Email 1 | 3 | 2 | 0 | 0 | 1 |
+| Email 2 | 0 | 0 | 2 | 3 | 0 |
+| Email 3 | 4 | 1 | 0 | 0 | 1 |
+| Email 4 | 0 | 0 | 1 | 2 | 0 |
+
+Here:
+- `free`, `offer`, `meeting`, and `project` are features.
+- Their values represent how many times each word appears in an email.
+- `Spam` is the target variable.
+
+For example, Email 1 contains the word `free` three times and `offer` two times. Its label is 1, meaning Spam.
+
+### Important terms
+
+**Features (X):** The 3000 word-count columns used by the model.
+
+**Target (y):** The Spam column containing 0 or 1.
+
+**Email identifier:** The email name column. It identifies an email but generally should not be used as a predictive feature.
+
+---
+
+## 3. Data Preprocessing
+
+Data preprocessing means preparing raw data so that it can be used by a machine learning model.
+
+Your manual explains that real-world data may contain missing values, noise, or an unsuitable format. Preprocessing helps clean and prepare that data. Assignment_9
+
+### Steps involved in preprocessing
+
+The manual lists these steps: Assignment_9
+
+1. Getting the dataset.
+2. Importing libraries.
+3. Importing the dataset.
+4. Finding missing data.
+5. Encoding categorical data.
+6. Splitting the dataset into training and testing sets.
+7. Feature scaling.
+
+Let's understand the important ones.
+
+### A. Finding Missing Data
+
+Sometimes a dataset contains empty or missing values.
+
+Example:
+
+| Email | free | offer | Spam |
+|---|---:|---:|---:|
+| Email 1 | 3 | 2 | 1 |
+| Email 2 | Missing | 0 | 0 |
+| Email 3 | 4 | 1 | 1 |
+
+We need to identify and handle missing values before training.
+
+Common approaches:
+- Remove rows containing missing values.
+- Replace missing values with an appropriate value, such as zero or the column mean.
+
+The correct approach depends on what the missing value represents.
+
+### B. Encoding Categorical Data
+
+Encoding means converting categorical values into numerical values.
+
+For example:
+
+| Category | Encoded value |
+|---|---:|
+| Spam | 1 |
+| Not Spam | 0 |
+
+Our dataset already contains numerical labels, so additional encoding may not be necessary for the target column.
+
+### C. Train-Test Split
+
+We divide the dataset into two parts:
+
+- **Training data:** Used to teach the model.
+- **Testing data:** Used to evaluate how well the trained model performs on unseen data.
+
+For example, if we have 1000 emails:
+
+| Dataset | Percentage | Number of emails |
+|---|---:|---:|
+| Training | 80% | 800 |
+| Testing | 20% | 200 |
+
+The model learns from 800 emails and is evaluated using the remaining 200.
+
+### D. Feature Scaling
+
+Feature scaling means bringing numerical features to a similar scale.
+
+Why is it important here?
+
+Suppose one feature has values between 0 and 2, while another has values between 0 and 1000. Algorithms that depend on distance or margins can be affected by these differences.
+
+KNN and SVM generally benefit from feature scaling.
+
+Two common methods are:
+
+**1. Standardization**
+
+\[
+z=\frac{x-\mu}{\sigma}
+\]
+
+It transforms data so that it has approximately zero mean and unit standard deviation.
+
+**2. Normalization (Min-Max Scaling)**
+
+\[
+x'=\frac{x-x_{min}}{x_{max}-x_{min}}
+\]
+
+It generally transforms values into the range 0 to 1.
+
+**Important practical point:** Fit the scaler using training data only, then use that fitted scaler to transform the test data. This prevents data leakage.
+
+---
+
+## 4. K-Nearest Neighbors (KNN)
+
+K-Nearest Neighbors is a supervised machine learning algorithm used for classification and regression.
+
+It classifies a new data point by looking at the **K closest data points** in the training dataset.
+
+### How does KNN work?
+
+Imagine a new email arrives. We want to determine whether it is spam.
+
+Let's assume we choose:
+
+\[
+K=3
+\]
+
+The algorithm:
+
+1. Takes the new email.
+2. Calculates its distance from the training emails.
+3. Finds the three nearest emails.
+4. Checks their labels.
+5. Assigns the majority label to the new email.
+
+### Example
+
+Suppose the three nearest emails have these labels:
+
+| Nearest email | Label |
+|---|---|
+| Email 1 | Spam (1) |
+| Email 2 | Spam (1) |
+| Email 3 | Not Spam (0) |
+
+Spam receives two votes, while Not Spam receives one vote.
+
+Therefore:
+
+**Predicted result = Spam (1).**
+
+### What does K mean?
+
+K represents the number of nearest neighbors considered when making a prediction.
+
+For example:
+- K = 1 → Considers the closest one email.
+- K = 3 → Considers the closest three emails.
+- K = 5 → Considers the closest five emails.
+
+A very small K can make the model sensitive to noise. A very large K can make it overlook local patterns.
+
+### How is distance calculated?
+
+A common distance measure is Euclidean distance.
+
+\[
+d=\sqrt{\sum_{i=1}^{n}(x_i-y_i)^2}
+\]
+
+Where:
+- \(x_i\) and \(y_i\) are feature values.
+- \(n\) is the number of features.
+- \(d\) is the calculated distance.
+
+**Remember:** KNN is also called a lazy learning algorithm because it does not build a traditional model during training. It stores the training data and performs calculations when a prediction is requested.
+
+---
+
+## 5. Support Vector Machine (SVM)
+
+Support Vector Machine is a supervised machine learning algorithm used for classification and regression.
+
+For this assignment, we use SVM for binary classification.
+
+### How does SVM work?
+
+SVM tries to find the best boundary that separates two classes.
+
+Imagine a graph containing:
+- Spam emails represented by red points.
+- Not Spam emails represented by blue points.
+
+SVM tries to draw a boundary that separates these two groups.
+
+This boundary is called a **hyperplane**.
+
+### Important SVM terms
+
+**1. Hyperplane**
+
+A decision boundary that separates different classes.
+
+**2. Support Vectors**
+
+The data points closest to the separating hyperplane.
+
+**3. Margin**
+
+The distance between the hyperplane and the nearest data points from each class.
+
+**4. Kernel**
+
+A technique that helps SVM handle data that cannot be separated easily using a straight-line boundary.
+
+### Types of SVM kernels
+
+| Kernel | Meaning |
+|---|---|
+| Linear | Uses a linear decision boundary |
+| Polynomial | Uses a polynomial decision boundary |
+| RBF | Handles more complex, non-linear relationships |
+| Sigmoid | Uses a sigmoid-based kernel function |
+
+### Simple example
+
+Suppose we have two groups of emails:
+
+- Spam emails: 1
+- Not Spam emails: 0
+
+SVM learns a boundary to separate these groups.
+
+When a new email arrives, SVM checks which side of the boundary it belongs to and predicts its class.
+
+**Remember:** SVM tries to find a separating hyperplane with the maximum possible margin.
+
+---
+
+## 6. Difference Between KNN and SVM
+
+This is an important viva question.
+
+| KNN | SVM |
+|---|---|
+| K-Nearest Neighbors | Support Vector Machine |
+| Distance-based algorithm | Margin-based algorithm |
+| Finds nearest data points | Finds an optimal separating hyperplane |
+| Uses majority voting | Uses a learned decision boundary |
+| No traditional training model | Learns a model during training |
+| Sensitive to feature scaling | Also benefits from feature scaling |
+
+**Easy way to remember:**
+
+- KNN → Looks at nearby examples.
+- SVM → Finds the best boundary between classes.
+
+---
+
+## 7. Evaluating Model Performance
+
+After training KNN and SVM, we need to check how accurately they classify emails.
+
+Common evaluation metrics include:
+
+### A. Accuracy
+
+Accuracy tells us how many predictions were correct out of all predictions.
+
+\[
+Accuracy=\frac{Correct\ Predictions}{Total\ Predictions}
+\]
+
+Example:
+
+Suppose the model classifies 100 emails and correctly predicts 90.
+
+\[
+Accuracy=\frac{90}{100}=90\%
+\]
+
+### B. Confusion Matrix
+
+A confusion matrix shows how many predictions were correct and incorrect.
+
+For spam detection:
+
+| | Predicted Spam | Predicted Not Spam |
+|---|---:|---:|
+| Actual Spam | True Positive (TP) | False Negative (FN) |
+| Actual Not Spam | False Positive (FP) | True Negative (TN) |
+
+Understand these four terms:
+
+- **True Positive:** Spam email correctly identified as spam.
+- **True Negative:** Normal email correctly identified as normal.
+- **False Positive:** Normal email incorrectly classified as spam.
+- **False Negative:** Spam email incorrectly classified as normal.
+
+### C. Precision
+
+Precision tells us how many emails predicted as spam were actually spam.
+
+\[
+Precision=\frac{TP}{TP+FP}
+\]
+
+Higher precision means fewer normal emails are incorrectly marked as spam.
+
+### D. Recall
+
+Recall tells us how many actual spam emails were correctly identified.
+
+\[
+Recall=\frac{TP}{TP+FN}
+\]
+
+Higher recall means fewer spam emails are missed.
+
+### E. F1 Score
+
+F1 Score is the harmonic mean of precision and recall.
+
+\[
+F1=2\times\frac{Precision\times Recall}{Precision+Recall}
+\]
+
+It is useful when we want to balance precision and recall.
+
+### Which metric is most important for spam detection?
+
+Both precision and recall are important.
+
+- High precision prevents normal emails from entering the spam folder.
+- High recall helps detect as many spam emails as possible.
+
+Accuracy alone may not be sufficient, particularly if the dataset contains many more normal emails than spam emails.
+
+---
+
+## 8. Overall Workflow of Assignment 9
+
+Understand this workflow because it connects all the concepts.
+
+1. **Import libraries:** Import Pandas, NumPy and Scikit-learn.
+2. **Load dataset:** Read the email CSV file.
+3. **Explore dataset:** Check rows, columns and data types.
+4. **Preprocess data:** Find and handle missing values and duplicates.
+5. **Separate features and target:** Use the 3000 word-count columns as X and the spam label as y.
+6. **Split dataset:** Divide data into training and testing sets.
+7. **Feature scaling:** Scale the features for KNN and SVM.
+8. **Implement KNN:** Train a KNN classifier.
+9. **Implement SVM:** Train an SVM classifier.
+10. **Evaluate models:** Calculate accuracy, precision, recall and F1 score.
+11. **Compare models:** Determine which algorithm performs better.
+
+---
+
+# 9. Important Viva Questions and Answers
+
+### Basic Machine Learning
+
+**Q1. What is Machine Learning?**  
+Machine Learning is a branch of AI that enables computers to learn patterns from data and make predictions.
+
+**Q2. What is supervised learning?**  
+It is a type of machine learning in which a model learns from labelled training data.
+
+**Q3. What is classification?**  
+Classification is a machine learning technique used to predict categories or classes.
+
+**Q4. What is binary classification?**  
+Binary classification is a classification problem having only two possible output classes.
+
+**Q5. Is spam detection classification or regression?**  
+It is a binary classification problem because the output is Spam or Not Spam.
+
+### Data Preprocessing
+
+**Q6. What is data preprocessing?**  
+It is the process of cleaning and transforming raw data into a suitable format for machine learning.
+
+**Q7. Why is preprocessing required?**  
+It handles missing values, noise and incorrect data, improving data quality.
+
+**Q8. What is feature scaling?**  
+Feature scaling brings numerical features to a similar scale.
+
+**Q9. What is train-test splitting?**  
+It divides a dataset into training data for learning and testing data for evaluating the model.
+
+### KNN
+
+**Q10. What is KNN?**  
+KNN is a supervised learning algorithm that classifies a new data point based on its nearest neighbors.
+
+**Q11. What does K represent in KNN?**  
+K represents the number of nearest neighbors considered for prediction.
+
+**Q12. Why is KNN called a lazy learning algorithm?**  
+Because it does not build a traditional model during training and performs calculations during prediction.
+
+**Q13. Which distance is commonly used in KNN?**  
+Euclidean distance is commonly used.
+
+**Q14. What happens if K is too small?**  
+The model may become sensitive to noise and overfit the data.
+
+### SVM
+
+**Q15. What is SVM?**  
+SVM is a supervised learning algorithm that finds an optimal boundary to separate different classes.
+
+**Q16. What is a hyperplane?**  
+A hyperplane is a decision boundary that separates different classes.
+
+**Q17. What are support vectors?**  
+Support vectors are the data points closest to the separating hyperplane.
+
+**Q18. What is a kernel in SVM?**  
+A kernel helps SVM handle data that cannot be separated using a simple linear boundary.
+
+**Q19. Name some SVM kernels.**  
+Linear, Polynomial, RBF and Sigmoid.
+
+### Evaluation
+
+**Q20. What is accuracy?**  
+Accuracy is the ratio of correctly predicted observations to the total observations.
+
+**Q21. What is a confusion matrix?**  
+It is a table used to evaluate a classification model by comparing actual and predicted labels.
+
+**Q22. What is precision?**  
+Precision measures how many predicted positive cases are actually positive.
+
+**Q23. What is recall?**  
+Recall measures how many actual positive cases are correctly identified.
+
+**Q24. What is F1 Score?**  
+F1 Score is the harmonic mean of precision and recall.
+
+**Q25. Which is better, KNN or SVM?**  
+It depends on the dataset. We compare their evaluation metrics to determine which performs better.
+
+---
+
+# 10. Important Comparison for Viva
+
+| Parameter | KNN | SVM |
+|---|---|---|
+| Full form | K-Nearest Neighbors | Support Vector Machine |
+| Type | Supervised | Supervised |
+| Used for | Classification and Regression | Classification and Regression |
+| Working principle | Nearest neighbors | Optimal hyperplane |
+| Feature scaling | Important | Important |
+| Training | Very little model-building | Learns a decision boundary |
+| Prediction | Finds nearest neighbors | Uses learned boundary |
+
+---
+
+## 11. Important Points to Remember
+
+| Topic | Remember this |
+|---|---|
+| ML type | Supervised Learning |
+| Problem type | Binary Classification |
+| Spam label | 1 |
+| Normal email label | 0 |
+| Features | 3000 word-count columns |
+| Target | Spam column |
+| KNN | Uses nearest neighbors |
+| SVM | Uses optimal hyperplane |
+| Hyperplane | Separating boundary |
+| Support vectors | Points closest to hyperplane |
+| Feature scaling | Brings features to similar scales |
+| Accuracy | Overall correct predictions |
+| Precision | Correctness of positive predictions |
+| Recall | Ability to find actual positive cases |
+| F1 Score | Balance between precision and recall |
+
+### One important observation about your manual
+
+Your PDF is only two pages long. It introduces data preprocessing and lists KNN, SVM and train-test splitting in its theory contents, but it does not provide detailed explanations of KNN, SVM, evaluation metrics or actual Python implementation steps. Assignment_9
+
+The KNN, SVM and evaluation explanations above are supplementary concepts needed to understand and perform the assignment.
+
+**Next, we can implement the complete Python program for Email Spam Detection using KNN and SVM, with line-by-line comments and explanations of each section.**

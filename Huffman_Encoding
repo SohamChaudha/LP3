@@ -1,0 +1,741 @@
+# DAA Assignment 2 – Huffman Encoding Using Greedy Strategy
+
+I've analysed your complete 5-page Assignment 2 manual.
+
+**Assignment title:** Write a program to implement Huffman Encoding using a Greedy Strategy.
+
+This assignment is about understanding how computers can **compress data to reduce the number of bits required to store or transmit information.**
+
+We'll follow the same preparation structure as Assignment 1:
+1. Understand what the assignment is about.
+2. Understand the important concepts.
+3. Learn the algorithm with an example.
+4. Prepare theory and viva questions with answers.
+5. Understand time and space complexity.
+6. Learn the Python implementation with line-by-line comments.
+
+---
+
+# 1. What is this assignment all about?
+
+Imagine you have the following text:
+
+```text
+AAAAABBBCC
+```
+
+There are:
+- A appearing 5 times.
+- B appearing 3 times.
+- C appearing 2 times.
+
+Normally, computers represent each character using a fixed number of bits.
+
+But what if we could assign fewer bits to frequently occurring characters and more bits to less frequent characters?
+
+That's exactly what **Huffman Encoding** does!
+
+It is a lossless data compression technique that assigns variable-length binary codes to characters based on their frequency.
+
+### How does Huffman Encoding work?
+
+The basic principle is:
+
+- Characters appearing frequently get shorter binary codes.
+- Characters appearing less frequently get longer binary codes.
+
+For example, consider these frequencies:
+
+| Character | Frequency |
+|---|---:|
+| A | 5 |
+| B | 3 |
+| C | 2 |
+
+One possible Huffman encoding is:
+
+| Character | Huffman Code |
+|---|---|
+| A | 0 |
+| B | 10 |
+| C | 11 |
+
+Notice that A appears most frequently and receives the shortest code.
+
+The original text:
+
+```text
+AAAAABBBCC
+```
+
+Becomes:
+
+```text
+0000010101011111
+```
+
+This requires 16 bits instead of 20 bits if we use 2 bits per character with fixed-length encoding.
+
+**The main objective of this assignment is to implement Huffman Encoding using the Greedy Algorithm and analyse its complexity.** Assignment No 2 DAA
+
+---
+
+# 2. Important concepts you must understand
+
+## Q1. What is data compression?
+
+Data compression is the process of reducing the size of data so that it requires less storage space or transmission bandwidth.
+
+## Q2. What is lossless compression?
+
+Lossless compression is a technique in which the original data can be recovered completely without losing any information.
+
+Example: Huffman Encoding.
+
+## Q3. What is Huffman Encoding?
+
+Huffman Encoding is a lossless data compression algorithm that assigns variable-length binary codes to characters based on their frequencies.
+
+## Q4. What is a greedy algorithm?
+
+A greedy algorithm solves a problem by selecting the best available option at each step without reconsidering previous decisions.
+
+## Q5. Why is Huffman Encoding called a greedy algorithm?
+
+Because it repeatedly selects the two characters or nodes having the minimum frequencies and combines them.
+
+## Q6. What is frequency in Huffman Encoding?
+
+Frequency represents the number of times a particular character appears in the input data.
+
+## Q7. What is a Huffman Tree?
+
+A Huffman Tree is a binary tree used to generate binary codes for characters based on their frequencies.
+
+## Q8. What is a leaf node?
+
+A leaf node is a node that does not have any child nodes. In Huffman Trees, leaf nodes represent individual characters.
+
+## Q9. What is an internal node?
+
+An internal node is a node that has child nodes. Its frequency is the sum of the frequencies of its children.
+
+## Q10. What is a prefix code?
+
+A prefix code is a code in which no character's code is the prefix of another character's code.
+
+For example:
+- A = 0
+- B = 10
+- C = 11
+
+Here, no code is the prefix of another.
+
+## Q11. Why are prefix codes important?
+
+They ensure that encoded data can be decoded without ambiguity.
+
+## Q12. What is a binary code?
+
+A binary code is a sequence consisting of only two digits: 0 and 1.
+
+---
+
+# 3. How does the Huffman Greedy Algorithm work?
+
+This is the most important part of your assignment.
+
+Huffman Encoding uses a **Min Heap (Priority Queue)** to build a Huffman Tree.
+
+### What is a Min Heap?
+
+A Min Heap is a tree-based data structure in which the smallest element is always available at the root.
+
+In Huffman Encoding, we use it to quickly find the two characters having the lowest frequencies.
+
+### Steps of the Huffman Algorithm
+
+1. Calculate the frequency of every character.
+2. Create a leaf node for each character.
+3. Insert all nodes into a Min Heap.
+4. Extract the two nodes having the minimum frequencies.
+5. Create a new internal node with their combined frequency.
+6. Insert this new node back into the Min Heap.
+7. Repeat until only one node remains.
+8. The remaining node becomes the root of the Huffman Tree.
+9. Traverse the tree to generate binary codes.
+
+These are the exact steps described in your manual. Assignment No 2 DAA
+
+### Example from your practical manual
+
+Consider the following characters and frequencies:
+
+| Character | Frequency |
+|---|---:|
+| a | 5 |
+| b | 9 |
+| c | 12 |
+| d | 13 |
+| e | 16 |
+| f | 45 |
+
+Let's construct the Huffman Tree.
+
+**Step 1:** Extract the two smallest frequencies.
+
+```text
+5 + 9 = 14
+```
+
+**Step 2:** Extract the next two smallest frequencies.
+
+```text
+12 + 13 = 25
+```
+
+**Step 3:** Extract the next two smallest frequencies.
+
+```text
+14 + 16 = 30
+```
+
+**Step 4:** Extract the next two smallest frequencies.
+
+```text
+25 + 30 = 55
+```
+
+**Step 5:** Extract the last two frequencies.
+
+```text
+45 + 55 = 100
+```
+
+Now only one node remains, with frequency 100.
+
+This becomes the root of our Huffman Tree.
+
+### How do we generate binary codes?
+
+After constructing the tree:
+
+- Moving towards the left child means 0.
+- Moving towards the right child means 1.
+- When we reach a leaf node, we assign the accumulated binary code to that character.
+
+This is how Huffman Encoding generates unique prefix codes. Assignment No 2 DAA
+
+---
+
+# 4. Python Program – Huffman Encoding
+
+For this assignment, we'll use Python's `heapq` module to implement a Min Heap.
+
+I've added comments explaining every important line.
+
+### Complete Python Code
+
+```python
+# Import required modules
+import heapq
+from collections import Counter
+from itertools import count
+
+
+# Function to generate Huffman codes
+def huffman_encoding(text):
+
+    # Step 1: Calculate frequency of each character
+    frequency = Counter(text)
+
+    # Step 2: Create an empty min heap
+    heap = []
+
+    # Used to uniquely identify heap entries when frequencies are equal
+    unique_id = count()
+
+    # Step 3: Insert each character into the min heap
+    for char, freq in frequency.items():
+
+        # Each heap entry contains frequency, unique ID and character
+        heapq.heappush(heap, (freq, next(unique_id), char))
+
+    # Step 4: Build the Huffman Tree
+    while len(heap) > 1:
+
+        # Extract the two nodes with minimum frequencies
+        freq1, id1, left = heapq.heappop(heap)
+        freq2, id2, right = heapq.heappop(heap)
+
+        # Create a new internal node with combined frequency
+        merged = (left, right)
+
+        # Insert the new node back into the min heap
+        heapq.heappush(
+            heap,
+            (freq1 + freq2, next(unique_id), merged)
+        )
+
+    # Step 5: Generate codes by traversing the Huffman Tree
+    codes = {}
+
+    # Function to traverse the tree
+    def generate_codes(node, code=""):
+
+        # Check whether the node is a leaf node
+        if isinstance(node, str):
+
+            # Assign the generated binary code to the character
+            codes[node] = code if code else "0"
+
+            return
+
+        # Traverse left child and append 0
+        generate_codes(node[0], code + "0")
+
+        # Traverse right child and append 1
+        generate_codes(node[1], code + "1")
+
+    # Get the root node of the Huffman Tree
+    root = heap[0][2]
+
+    # Generate Huffman codes
+    generate_codes(root)
+
+    # Step 6: Encode the original text
+    encoded_text = ""
+
+    for char in text:
+        encoded_text += codes[char]
+
+    # Display character frequencies and Huffman codes
+    print("Character  Frequency  Huffman Code")
+
+    for char, freq in frequency.items():
+        print(char, "          ", freq, "         ", codes[char])
+
+    # Display encoded message
+    print("\nEncoded Message:", encoded_text)
+
+    # Return the generated codes and encoded message
+    return codes, encoded_text
+
+
+# Main program
+text = input("Enter the text to encode: ")
+
+# Call the Huffman Encoding function
+huffman_encoding(text)
+```
+
+### Example Input
+
+```text
+Enter the text to encode: AAAAABBBCC
+```
+
+### Example Output
+
+```text
+Character  Frequency  Huffman Code
+
+A           5          0
+B           3          10
+C           2          11
+
+Encoded Message: 0000010101011111
+```
+
+*Note: When two characters have equal frequencies, multiple valid Huffman Trees and code assignments are possible. The exact codes can differ depending on tie-breaking.*
+
+---
+
+# 5. Understand the important Python concepts used
+
+Your examiner may ask why you used particular Python functions.
+
+### Q1. What is `heapq`?
+
+`heapq` is a Python module used to implement a Min Heap, where the smallest element is always available first.
+
+### Q2. What is `Counter`?
+
+`Counter` is a class from the collections module that counts how many times each element appears.
+
+Example:
+
+```python
+from collections import Counter
+
+text = "AAABBCC"
+
+print(Counter(text))
+```
+
+Output:
+
+```text
+{'A': 3, 'B': 2, 'C': 2}
+```
+
+### Q3. What is `heappush()`?
+
+It inserts an element into the heap while maintaining the Min Heap property.
+
+### Q4. What is `heappop()`?
+
+It removes and returns the smallest element from the heap.
+
+### Q5. Why do we use `while len(heap) > 1`?
+
+Because we need to keep combining the two smallest nodes until only one node remains.
+
+### Q6. Why do we use `isinstance(node, str)`?
+
+To check whether the current node represents a character (leaf node) or an internal node containing two children.
+
+### Q7. Why do we use `count()`?
+
+It generates unique numbers to break ties when two heap elements have equal frequencies. This also prevents Python from trying to compare tree nodes directly.
+
+---
+
+# 6. Time and Space Complexity
+
+This is extremely important for your practical viva.
+
+### Time Complexity
+
+According to your manual:
+
+\[
+\boxed{O(n\log n)}
+\]
+
+Where n is the number of unique characters.
+
+**Why?**
+
+- Building the Min Heap takes O(n).
+- Extracting the two minimum nodes takes O(log n) per extraction.
+- We perform n−1 merging operations.
+- Each merge requires heap operations.
+
+Therefore:
+
+\[
+O(n\log n)
+\]
+
+### Space Complexity
+
+The auxiliary space complexity is:
+
+\[
+\boxed{O(n)}
+\]
+
+Because we store:
+- The frequency of each character.
+- The Min Heap.
+- The Huffman Tree.
+- The generated codes.
+
+Here, n represents the number of unique characters.
+
+The manual also mentions that if the input array is sorted, a linear-time algorithm exists. Assignment No 2 DAA
+
+---
+
+# 7. Important Viva Questions with Answers
+
+These are the questions I recommend preparing for your practical examination.
+
+### Basic Questions
+
+**Q1. What is Huffman Encoding?**
+
+Huffman Encoding is a lossless compression technique that assigns variable-length binary codes to characters based on their frequencies.
+
+**Q2. What is the main purpose of Huffman Encoding?**
+
+To reduce the number of bits required to represent data and save storage space.
+
+**Q3. Why is Huffman Encoding called a greedy algorithm?**
+
+Because it repeatedly selects the two nodes with the smallest frequencies and combines them.
+
+**Q4. Which data structure is used in Huffman Encoding?**
+
+A Min Heap (Priority Queue).
+
+**Q5. Which tree is used in Huffman Encoding?**
+
+A Binary Tree called the Huffman Tree.
+
+**Q6. What is the difference between fixed-length and variable-length encoding?**
+
+Fixed-length encoding uses the same number of bits for every character, whereas variable-length encoding uses different numbers of bits.
+
+**Q7. Which character gets the shortest code?**
+
+The character with the highest frequency generally gets the shortest code.
+
+**Q8. Which character gets the longest code?**
+
+Characters with lower frequencies generally get longer codes.
+
+**Q9. What is lossless compression?**
+
+Compression in which the original data can be recovered exactly without losing information.
+
+**Q10. What is a prefix-free code?**
+
+A code in which no character's binary code is the starting portion of another character's code.
+
+### Greedy Algorithm Questions
+
+**Q11. What is a greedy strategy?**
+
+It selects the locally optimal choice at every step to achieve an overall solution.
+
+**Q12. What is a local optimum?**
+
+The best possible choice at a particular step.
+
+**Q13. What is a global optimum?**
+
+The best overall solution to a problem.
+
+**Q14. Does every greedy algorithm produce an optimal solution?**
+
+No. Greedy algorithms do not guarantee optimal solutions for every problem.
+
+**Q15. What is the first step in Huffman Encoding?**
+
+Calculate the frequency of every unique character.
+
+**Q16. Why do we select two minimum-frequency nodes?**
+
+Because Huffman Encoding combines the two least frequent nodes at every step to construct an optimal prefix code.
+
+**Q17. When does the Huffman algorithm stop?**
+
+When only one node remains in the Min Heap.
+
+**Q18. What is the root node of a Huffman Tree?**
+
+The final remaining node after combining all the nodes. Its frequency equals the total frequency of all characters.
+
+### Complexity Questions
+
+**Q19. What is the time complexity of Huffman Encoding?**
+
+O(n log n), where n is the number of unique characters.
+
+**Q20. What is the space complexity of Huffman Encoding?**
+
+O(n), because we store the Huffman Tree, frequency table and codes.
+
+**Q21. Why do we use a Min Heap instead of a normal array?**
+
+A Min Heap allows us to efficiently extract the two minimum-frequency nodes.
+
+**Q22. What is the time complexity of extracting an element from a Min Heap?**
+
+O(log n).
+
+**Q23. What is the time complexity of inserting an element into a Min Heap?**
+
+O(log n).
+
+**Q24. What happens if two characters have the same frequency?**
+
+Either character can be selected first. Multiple valid Huffman codes may be generated.
+
+### Conceptual Questions
+
+**Q25. Can Huffman Encoding work with numbers instead of characters?**
+
+Yes. It can work with any symbols having associated frequencies.
+
+**Q26. Can Huffman Encoding be used for images?**
+
+Yes. It can be used in image compression formats and compression systems.
+
+**Q27. What happens if there is only one unique character?**
+
+A special code such as 0 is assigned to that character.
+
+**Q28. Why is Huffman Encoding better than fixed-length encoding?**
+
+It can reduce the total number of bits by assigning shorter codes to frequently occurring characters.
+
+**Q29. Is Huffman Encoding reversible?**
+
+Yes. It is lossless, so the original data can be recovered using the Huffman Tree or corresponding code table.
+
+**Q30. What is the disadvantage of Huffman Encoding?**
+
+The encoder and decoder need the Huffman Tree or code table, which also requires storage or transmission.
+
+---
+
+# 8. Assignment Questions from Your Manual
+
+Your manual contains six assignment questions. Here are their answers.
+
+### Q1. Write an algorithm/pseudocode for Huffman Encoding.
+
+```text
+1. Start
+2. Calculate frequency of each character.
+3. Create a Min Heap.
+4. Insert all characters with their frequencies.
+5. While heap contains more than one node:
+      a. Extract minimum node X.
+      b. Extract minimum node Y.
+      c. Create a new node Z.
+      d. Z.frequency = X.frequency + Y.frequency.
+      e. Insert Z into the heap.
+6. The remaining node becomes the root.
+7. Traverse the tree to generate binary codes.
+8. Stop.
+```
+
+### Q2. Explain complexity analysis of Huffman Encoding.
+
+Time Complexity: O(n log n), because extracting and inserting elements into the Min Heap requires O(log n) time.
+
+Space Complexity: O(n), because the algorithm stores the frequency table, Min Heap and Huffman Tree.
+
+### Q3. Explain the purpose and basic principles of Huffman Coding.
+
+The purpose of Huffman Coding is to compress data by reducing the number of bits required to represent characters.
+
+Basic principles:
+1. Calculate character frequencies.
+2. Assign shorter codes to frequent characters.
+3. Assign longer codes to less frequent characters.
+4. Use prefix-free binary codes.
+5. Build a Huffman Tree using a greedy approach.
+
+### Q4. Find Huffman codes for the given text.
+
+Your manual provides:
+
+```text
+ABCCDEBABFFBACBEBDFAAAABCDEEDCCBFEBFCAEFBACBEBDFAAAABC
+```
+
+First, calculate the frequency of each character.
+
+| Character | Frequency |
+|---|---:|
+| A | 13 |
+| B | 13 |
+| C | 9 |
+| D | 5 |
+| E | 7 |
+| F | 7 |
+
+One valid Huffman code assignment is:
+
+| Character | Frequency | Huffman Code |
+|---|---:|---|
+| A | 13 | 01 |
+| B | 13 | 10 |
+| C | 9 | 111 |
+| D | 5 | 000 |
+| E | 7 | 001 |
+| F | 7 | 110 |
+
+**Total encoded bits = 136 bits.**
+
+Note: Different tie-breaking choices can produce different valid codes, but the minimum weighted encoded length remains the same.
+
+### Q5. How do you calculate average code length in Huffman Coding?
+
+Average code length is calculated by multiplying each character's frequency by its code length, adding the results and dividing by the total frequency.
+
+Formula:
+
+\[
+L_{avg}=\frac{\sum f_i l_i}{\sum f_i}
+\]
+
+Where:
+- \(f_i\) = Frequency of character.
+- \(l_i\) = Length of its binary code.
+
+For our example:
+
+\[
+L_{avg}=\frac{(13×2)+(13×2)+(9×3)+(5×3)+(7×3)+(7×3)}{54}
+\]
+
+\[
+=\frac{136}{54}
+\]
+
+\[
+\boxed{2.52\ bits}
+\]
+
+### Q6. How are Huffman Coding bits calculated?
+
+The total encoded bits are calculated by multiplying each character's frequency by its code length and adding all the results.
+
+\[
+Total\ Bits=\sum(f_i×l_i)
+\]
+
+For our example:
+
+\[
+=13(2)+13(2)+9(3)+5(3)+7(3)+7(3)
+\]
+
+\[
+\boxed{136\ bits}
+\]
+
+---
+
+# 9. Quick Revision Before Your Practical
+
+Remember these important points:
+
+| Topic | Answer |
+|---|---|
+| Algorithm | Greedy |
+| Data Structure | Min Heap |
+| Tree | Binary Tree |
+| Compression | Lossless |
+| Coding | Variable-length |
+| Most frequent character | Shortest code (generally) |
+| Least frequent character | Longest code (generally) |
+| Time Complexity | O(n log n) |
+| Space Complexity | O(n) |
+| Left Traversal | 0 |
+| Right Traversal | 1 |
+| Stopping Condition | Only one node remains |
+
+### 5 questions you should definitely prepare
+
+1. What is Huffman Encoding and why is it used?
+2. Why is Huffman Encoding a greedy algorithm?
+3. Why do we use a Min Heap?
+4. Explain how a Huffman Tree is constructed.
+5. Explain the time and space complexity.
+
+---
+
+## My recommendation
+
+For Assignment 2, focus particularly on **how the Huffman Tree is constructed**. Your examiner might give you five characters with frequencies and ask you to construct the tree manually.
+
+Also, practise the Python functions `heapq.heappush()`, `heapq.heappop()` and `Counter()` because they are important to understanding your implementation.
+
+**Send Assignment 3 when you're ready. We'll continue with the same preparation format.**

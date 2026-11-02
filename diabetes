@@ -1,0 +1,727 @@
+# ML Assignment 11: Diabetes Prediction Using K-Nearest Neighbors (KNN)
+
+Let's understand your fourth ML assignment.
+
+**Title:** Implement the K-Nearest Neighbors algorithm on the `diabetes.csv` dataset and calculate the confusion matrix, accuracy, error rate, precision and recall.
+
+The goal is to build a machine learning model that predicts whether a patient has diabetes based on medical information such as glucose level, BMI, age and insulin level. Assignment_11
+
+This assignment mainly focuses on:
+1. K-Nearest Neighbors (KNN).
+2. Training and testing a classification model.
+3. Confusion matrix and evaluation metrics.
+4. K-Fold Cross-Validation.
+5. Hyperparameter tuning using GridSearchCV.
+
+---
+
+## 1. What is this assignment all about?
+
+Imagine a hospital has information about 768 patients.
+
+For each patient, we have medical details such as:
+- Number of pregnancies
+- Glucose level
+- Blood pressure
+- Skin thickness
+- Insulin level
+- BMI
+- Age
+
+We want to build a model that learns from this historical data and predicts whether a new patient has diabetes.
+
+The model produces one of two outputs:
+
+| Output | Meaning |
+|---|---|
+| 0 | Patient does not have diabetes |
+| 1 | Patient has diabetes |
+
+### What type of ML problem is this?
+
+**Supervised Learning – Binary Classification**
+
+- Supervised learning: The model learns from data that already contains correct labels.
+- Classification: The model predicts a category.
+- Binary classification: There are two possible output classes.
+
+**Important:** This assignment uses KNN, not a neural network. It is different from Assignment 10.
+
+---
+
+## 2. Understanding the Dataset
+
+According to your manual, the dataset contains:
+
+- **768 rows:** Each row represents a patient.
+- **9 columns:** 8 input features and 1 target column.
+
+The manual uses the target column name `diabetes`. Assignment_11
+
+### Understanding the columns
+
+| Column | Meaning |
+|---|---|
+| `pregnancies` | Number of times the patient has been pregnant |
+| `glucose` | Glucose level |
+| `diastolic` | Diastolic blood pressure |
+| `triceps` | Triceps skin-fold thickness |
+| `insulin` | Insulin level |
+| `bmi` | Body Mass Index |
+| `dpf` | Diabetes Pedigree Function |
+| `age` | Patient's age |
+| `diabetes` | Target variable (0 or 1) |
+
+### Features and Target
+
+**Features (X):** All columns except `diabetes`.
+
+**Target (y):** The `diabetes` column.
+
+For example:
+
+| Glucose | BMI | Age | Diabetes |
+|---:|---:|---:|---:|
+| 148 | 33.6 | 50 | 1 |
+| 85 | 26.6 | 31 | 0 |
+| 183 | 23.3 | 32 | 1 |
+| 89 | 28.1 | 21 | 0 |
+
+The model uses glucose, BMI, age and other features to predict the diabetes label.
+
+---
+
+## 3. What is K-Nearest Neighbors (KNN)?
+
+K-Nearest Neighbors is a **supervised machine learning algorithm** used for classification and regression.
+
+It predicts the class of a new data point by finding the K closest data points in the training dataset.
+
+Your manual explains this using an example where K = 5: if three nearest points belong to the green class and two belong to the red class, the new point is classified as green. Assignment_11
+
+### How does KNN work?
+
+Suppose a new patient's diabetes status is unknown.
+
+We choose:
+
+\[
+K=3
+\]
+
+The algorithm follows these steps:
+
+1. Take the new patient's medical data.
+2. Calculate the distance between this patient and the training patients.
+3. Find the three nearest patients.
+4. Check their diabetes labels.
+5. Assign the majority label to the new patient.
+
+### Example
+
+Suppose the three nearest patients have these labels:
+
+| Patient | Diabetes |
+|---|---|
+| Patient 1 | 1 |
+| Patient 2 | 1 |
+| Patient 3 | 0 |
+
+Here:
+- Diabetes = 1 gets two votes.
+- Diabetes = 0 gets one vote.
+
+Therefore, the prediction is:
+
+**Diabetes = 1 (Patient has diabetes).**
+
+### What does K mean?
+
+K represents the number of nearest neighbors considered for prediction.
+
+| K value | Meaning |
+|---|---|
+| K = 1 | Considers the closest one patient |
+| K = 3 | Considers the closest three patients |
+| K = 5 | Considers the closest five patients |
+
+### How is distance calculated?
+
+KNN commonly uses Euclidean distance.
+
+\[
+d=\sqrt{\sum_{i=1}^{n}(x_i-y_i)^2}
+\]
+
+Where:
+- \(x_i\) = Feature value of the first patient.
+- \(y_i\) = Feature value of the second patient.
+- \(n\) = Number of features.
+- \(d\) = Distance between the two patients.
+
+**Remember:** KNN predicts the class based on the majority class among the nearest neighbors.
+
+---
+
+## 4. Understanding the Python Libraries
+
+Your manual uses **Pandas** and **Scikit-learn** to implement KNN.
+
+### A. Pandas
+
+Pandas is a Python library used for data manipulation and analysis.
+
+It helps us:
+- Read CSV files.
+- View datasets.
+- Select columns.
+- Remove columns.
+- Handle missing values.
+
+Example:
+
+```python
+import pandas as pd
+
+df = pd.read_csv("diabetes.csv")
+print(df.head())
+```
+
+`head()` displays the first five rows of the dataset.
+
+### B. Scikit-learn
+
+Scikit-learn is a Python machine learning library.
+
+It provides ready-made functions for:
+- Training machine learning models.
+- Splitting datasets.
+- Calculating accuracy.
+- Creating confusion matrices.
+- Performing cross-validation.
+- Tuning model parameters.
+
+### C. NumPy
+
+NumPy is a Python library used for numerical calculations and working with arrays.
+
+Example:
+
+```python
+import numpy as np
+
+print(np.mean([10, 20, 30]))
+```
+
+Output:
+
+```text
+20.0
+```
+
+---
+
+## 5. Splitting the Dataset into Training and Testing Data
+
+Before training our model, we divide the dataset into two parts.
+
+### Training Data
+
+Training data is used by the model to learn patterns.
+
+### Testing Data
+
+Testing data is used to check how well the model performs on unseen data.
+
+Your manual uses an 80:20 split. Assignment_11
+
+| Dataset | Percentage | Number of patients |
+|---|---:|---:|
+| Training | 80% | Approximately 614 |
+| Testing | 20% | Approximately 154 |
+| Total | 100% | 768 |
+
+The manual uses:
+
+```python
+train_test_split(
+    X, y,
+    test_size=0.2,
+    random_state=1,
+    stratify=y
+)
+```
+
+Let's understand the parameters:
+
+- `X`: Input features.
+- `y`: Target values.
+- `test_size=0.2`: Uses 20% of the data for testing.
+- `random_state=1`: Makes the split reproducible.
+- `stratify=y`: Maintains approximately the same proportion of each target class in both datasets.
+
+**Why do we need training and testing data?**
+
+To evaluate whether the model can make predictions on patients whose data it has not already seen.
+
+---
+
+## 6. Building and Training the KNN Model
+
+Your manual creates a KNN classifier with `n_neighbors=3`. Assignment_11
+
+Example:
+
+```python
+from sklearn.neighbors import KNeighborsClassifier
+
+# Create a KNN classifier with 3 nearest neighbors
+knn = KNeighborsClassifier(n_neighbors=3)
+
+# Train the model using training data
+knn.fit(X_train, y_train)
+```
+
+### Understand the code
+
+**1. KNeighborsClassifier**
+
+This imports the KNN classification algorithm from Scikit-learn.
+
+**2. n_neighbors=3**
+
+It tells the algorithm to consider the three nearest patients when predicting the diabetes status of a new patient.
+
+**3. fit()**
+
+The `fit()` function trains the model using the training data.
+
+### Making Predictions
+
+After training, we can predict the diabetes status of test patients.
+
+```python
+# Predict diabetes status for test patients
+y_pred = knn.predict(X_test)
+
+# Display the first five predictions
+print(y_pred[:5])
+```
+
+Possible output:
+
+```text
+[0 0 0 0 1]
+```
+
+This means:
+- First four patients are predicted as not having diabetes.
+- Fifth patient is predicted as having diabetes.
+
+The manual demonstrates this prediction step on page 4. Assignment_11
+
+---
+
+## 7. Evaluating the KNN Model
+
+After making predictions, we need to evaluate the model.
+
+Your assignment specifically asks for:
+- Confusion Matrix
+- Accuracy
+- Error Rate
+- Precision
+- Recall
+
+### A. Confusion Matrix
+
+A confusion matrix compares actual results with predicted results.
+
+For diabetes prediction:
+
+- Positive (1) = Patient has diabetes.
+- Negative (0) = Patient does not have diabetes.
+
+| | Actual Diabetes (1) | Actual No Diabetes (0) |
+|---|---:|---:|
+| Predicted Diabetes (1) | TP | FP |
+| Predicted No Diabetes (0) | FN | TN |
+
+The four terms are:
+
+- **True Positive (TP):** Correctly predicts that a patient has diabetes.
+- **True Negative (TN):** Correctly predicts that a patient does not have diabetes.
+- **False Positive (FP):** Predicts diabetes, but the patient does not have diabetes.
+- **False Negative (FN):** Predicts no diabetes, but the patient actually has diabetes.
+
+### B. Accuracy
+
+Accuracy measures the percentage of correct predictions.
+
+\[
+Accuracy=\frac{TP+TN}{TP+TN+FP+FN}
+\]
+
+### C. Error Rate
+
+Error rate measures the percentage of incorrect predictions.
+
+\[
+Error\ Rate=\frac{FP+FN}{Total\ Predictions}
+\]
+
+Or:
+
+\[
+Error\ Rate=1-Accuracy
+\]
+
+### D. Precision
+
+Precision measures how many patients predicted as having diabetes actually have diabetes.
+
+\[
+Precision=\frac{TP}{TP+FP}
+\]
+
+### E. Recall
+
+Recall measures how many actual diabetes patients were correctly identified.
+
+\[
+Recall=\frac{TP}{TP+FN}
+\]
+
+**Important:** In medical prediction, recall is especially important because we want to identify as many patients with diabetes as possible. A false negative could mean a patient with diabetes is incorrectly classified as healthy.
+
+---
+
+## 8. What is K-Fold Cross-Validation?
+
+This is one of the most important additional concepts in your assignment.
+
+Cross-validation is a technique used to evaluate a machine learning model using multiple training and testing splits.
+
+Your manual explains that the dataset is divided into K groups, also called folds. Assignment_11
+
+### Example: 5-Fold Cross-Validation
+
+Suppose we have 100 records.
+
+We divide them into five equal groups:
+
+| Fold | Records |
+|---|---|
+| Fold 1 | 1–20 |
+| Fold 2 | 21–40 |
+| Fold 3 | 41–60 |
+| Fold 4 | 61–80 |
+| Fold 5 | 81–100 |
+
+The model is trained and tested five times:
+
+| Iteration | Training Data | Testing Data |
+|---|---|---|
+| 1 | Folds 2, 3, 4, 5 | Fold 1 |
+| 2 | Folds 1, 3, 4, 5 | Fold 2 |
+| 3 | Folds 1, 2, 4, 5 | Fold 3 |
+| 4 | Folds 1, 2, 3, 5 | Fold 4 |
+| 5 | Folds 1, 2, 3, 4 | Fold 5 |
+
+Each fold gets a chance to be used for testing.
+
+### Why do we use Cross-Validation?
+
+A single train-test split may produce results that depend heavily on which records were selected for testing.
+
+Cross-validation evaluates the model across multiple splits and gives a more reliable estimate of its performance.
+
+### Cross-Validation Code
+
+Your manual uses `cross_val_score()`:
+
+```python
+from sklearn.model_selection import cross_val_score
+import numpy as np
+
+# Create a KNN model
+knn_cv = KNeighborsClassifier(n_neighbors=3)
+
+# Perform 5-fold cross-validation
+cv_scores = cross_val_score(knn_cv, X, y, cv=5)
+
+# Display individual scores
+print(cv_scores)
+
+# Calculate average accuracy
+print(np.mean(cv_scores))
+```
+
+The manual reports an average cross-validation accuracy of approximately **71.36%** for its example. This is the result reported in the document, not a guaranteed result for every run or environment. Assignment_11
+
+---
+
+## 9. What is Hyperparameter Tuning?
+
+Hyperparameter tuning means finding the best settings for a machine learning model to improve its performance.
+
+In KNN, one important hyperparameter is `n_neighbors`, which determines the value of K.
+
+For example:
+- K = 1
+- K = 3
+- K = 5
+- K = 10
+- K = 15
+
+We want to find which K value gives the best model performance.
+
+### What is GridSearchCV?
+
+GridSearchCV is a Scikit-learn technique that tests different combinations of hyperparameter values using cross-validation.
+
+Your manual uses it to find the best value of `n_neighbors`. Assignment_11
+
+### Code
+
+```python
+from sklearn.model_selection import GridSearchCV
+import numpy as np
+
+# Create a KNN classifier
+knn2 = KNeighborsClassifier()
+
+# Define the K values to test: 1 to 24
+param_grid = {
+    'n_neighbors': np.arange(1, 25)
+}
+
+# Test each K value using 5-fold cross-validation
+knn_gscv = GridSearchCV(
+    knn2,
+    param_grid,
+    cv=5
+)
+
+# Train and evaluate the models
+knn_gscv.fit(X, y)
+
+# Display the best K value
+print(knn_gscv.best_params_)
+
+# Display the best average cross-validation score
+print(knn_gscv.best_score_)
+```
+
+### Understand the important functions
+
+| Function | Purpose |
+|---|---|
+| `GridSearchCV()` | Creates a hyperparameter search |
+| `param_grid` | Specifies the values to test |
+| `cv=5` | Uses five-fold cross-validation |
+| `fit()` | Runs the search and trains candidate models |
+| `best_params_` | Returns the best hyperparameter values |
+| `best_score_` | Returns the best mean cross-validation score |
+
+According to your manual, the best value found in its example is:
+
+\[
+K=14
+\]
+
+The manual uses this value to demonstrate hyperparameter tuning. Assignment_11
+
+**Remember the difference:**
+
+- Cross-validation evaluates a model across multiple data splits.
+- GridSearchCV uses cross-validation to find the best hyperparameter settings.
+
+---
+
+## 10. Time and Space Complexity of KNN
+
+Let:
+- \(n\) = Number of training records.
+- \(d\) = Number of features.
+- \(k\) = Number of nearest neighbors.
+
+| Operation | Time Complexity |
+|---|---|
+| Training (storing data) | Approximately O(1) model-building work |
+| Predicting one record | O(nd) for distance calculations, plus neighbor selection |
+| Predicting multiple records | Depends on the number of test records |
+
+KNN is called a **lazy learning algorithm** because it does very little work during training. Most of the computation happens when making predictions.
+
+Its storage requirement is approximately O(nd), because it stores the training data.
+
+---
+
+# 11. Important Viva Questions and Answers
+
+### Basic ML Questions
+
+**Q1. What is Machine Learning?**  
+Machine Learning is a branch of AI that enables computers to learn patterns from data and make predictions.
+
+**Q2. What is supervised learning?**  
+It is a type of ML in which a model learns from labelled training data.
+
+**Q3. What is classification?**  
+Classification is a machine learning technique used to predict categories or classes.
+
+**Q4. What is binary classification?**  
+It is a classification problem with only two possible output classes.
+
+**Q5. What is the objective of this assignment?**  
+To predict whether a patient has diabetes using the KNN algorithm.
+
+### KNN Questions
+
+**Q6. What is KNN?**  
+KNN is a supervised learning algorithm that predicts a class based on the nearest data points.
+
+**Q7. What does K represent in KNN?**  
+K represents the number of nearest neighbors considered for prediction.
+
+**Q8. Which distance is commonly used in KNN?**  
+Euclidean distance.
+
+**Q9. Why is KNN called a lazy learning algorithm?**  
+Because it stores training data and performs most calculations during prediction.
+
+**Q10. What happens if K is too small?**  
+The model may become sensitive to noise and overfit the data.
+
+**Q11. What happens if K is too large?**  
+The model may become less sensitive to local patterns and underfit the data.
+
+**Q12. Why is feature scaling important in KNN?**  
+Because KNN uses distance calculations, features with larger numerical ranges can dominate the distance.
+
+### Cross-Validation and GridSearchCV
+
+**Q13. What is cross-validation?**  
+It is a technique that evaluates a model using multiple training and testing splits.
+
+**Q14. What is K-Fold Cross-Validation?**  
+It divides the dataset into K groups and uses each group once for testing.
+
+**Q15. What is GridSearchCV?**  
+It is a technique used to find the best hyperparameter values using cross-validation.
+
+**Q16. What is a hyperparameter?**  
+A hyperparameter is a model setting specified before training, such as the number of neighbors in KNN.
+
+**Q17. What is `best_params_`?**  
+It returns the best hyperparameter combination found by GridSearchCV.
+
+**Q18. What is `best_score_`?**  
+It returns the best average cross-validation score found during the search.
+
+### Evaluation Questions
+
+**Q19. What is a confusion matrix?**  
+It is a table that compares actual and predicted classes to evaluate a classification model.
+
+**Q20. What is accuracy?**  
+It is the ratio of correct predictions to total predictions.
+
+**Q21. What is error rate?**  
+It is the ratio of incorrect predictions to total predictions.
+
+**Q22. What is precision?**  
+It measures how many predicted positive cases are actually positive.
+
+**Q23. What is recall?**  
+It measures how many actual positive cases are correctly identified.
+
+**Q24. Why is recall important in diabetes prediction?**  
+It helps identify more patients who actually have diabetes and reduces false negatives.
+
+---
+
+# 12. Answers to Assignment Questions
+
+Your manual's title specifically asks for the confusion matrix, accuracy, error rate, precision and recall. Assignment_11
+
+Here are the short answers for revision:
+
+**Q1. What is KNN?**  
+KNN is a supervised machine learning algorithm that classifies a data point based on the majority class of its K nearest neighbors.
+
+**Q2. What is a confusion matrix?**  
+A confusion matrix is a table used to evaluate a classification model using TP, TN, FP and FN.
+
+**Q3. What is accuracy?**  
+Accuracy is the ratio of correctly predicted observations to the total observations.
+
+**Q4. What is error rate?**  
+Error rate is the ratio of incorrectly predicted observations to the total observations.
+
+**Q5. What is precision?**  
+Precision is the ratio of true positive predictions to all positive predictions.
+
+**Q6. What is recall?**  
+Recall is the ratio of true positive predictions to all actual positive cases.
+
+**Q7. What is cross-validation?**  
+Cross-validation evaluates a model using multiple training and testing splits to estimate its performance more reliably.
+
+**Q8. What is GridSearchCV?**  
+GridSearchCV tests different hyperparameter values using cross-validation to find the best settings.
+
+---
+
+## 13. Important Points to Remember
+
+| Topic | Remember this |
+|---|---|
+| Assignment | Diabetes Prediction |
+| ML type | Supervised Learning |
+| Problem type | Binary Classification |
+| Dataset rows | 768 |
+| Dataset columns | 9 |
+| Input features | 8 |
+| Target column | `diabetes` |
+| 0 | No diabetes |
+| 1 | Diabetes |
+| Algorithm | KNN |
+| Distance | Euclidean distance |
+| Initial K value | 3 |
+| Train-test split | 80:20 |
+| Cross-validation | 5-Fold |
+| Hyperparameter tuning | GridSearchCV |
+| Best K in manual's example | 14 |
+
+---
+
+## 14. Important Corrections and Observations in Your Manual
+
+There are a few inconsistencies worth knowing before your practical:
+
+1. **KNN vs Random Forest:** The title and detailed implementation focus on KNN, but the objective also mentions Random Forest. The manual does not provide a Random Forest implementation. Our main practical explanation therefore follows KNN.
+
+2. **Classification vs regression metrics:** The objective mentions `mean_squared_error`, `r2_score` and `roc_auc_score`. MSE and R² are commonly used for regression, whereas this assignment is a classification problem. Confusion matrix, accuracy, precision, recall and ROC-AUC are more appropriate classification metrics.
+
+3. **Target column name:** The dataset description calls the target `Outcome`, but the implementation uses `diabetes`. Check the actual CSV column name before running the code.
+
+4. **Scaling is important:** The manual's KNN example does not show feature scaling. However, KNN is distance-based, so standardizing or normalizing the input features is generally recommended. Scaling must be fitted on training data only.
+
+5. **Medical data requires care:** The dataset's predictions are for educational purposes. A KNN prediction is not a medical diagnosis.
+
+---
+
+### What you should understand before the practical
+
+The most important concepts in this assignment are:
+
+- How KNN classifies a new patient.
+- Why we split data into training and testing sets.
+- Why feature scaling matters.
+- How to calculate confusion matrix, accuracy, error rate, precision and recall.
+- How K-Fold Cross-Validation works.
+- How GridSearchCV finds the best K value.
+
+**Next step:** We can implement the complete diabetes prediction program in Python, following your manual, with comments explaining every line—from loading the CSV to KNN training, evaluation, cross-validation and GridSearchCV.

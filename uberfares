@@ -1,0 +1,513 @@
+# ML Assignment 8: Uber Fare Price Prediction
+
+Let's start with your first Machine Learning assignment.
+
+**Title:** Predict the price of an Uber ride from a given pickup point to the agreed drop-off location.
+
+This assignment is about building a machine learning model that predicts an Uber ride's fare using information such as pickup location, drop-off location, distance, and other relevant data.
+
+The manual asks you to:
+1. Preprocess the dataset.
+2. Implement Linear Regression and Random Forest Regression.
+3. Evaluate and compare both models using metrics such as R² and RMSE. Assignment_8
+
+---
+
+## 1. What is this assignment all about?
+
+Imagine you book an Uber ride:
+
+- Pickup location: Pune Railway Station
+- Drop-off location: Hinjewadi
+- Distance: 18 km
+- Other details: Date, time, passenger count
+
+Uber needs to estimate how much the ride should cost.
+
+We will provide historical Uber ride data to a machine learning model. The model learns patterns from previous rides and uses them to predict the fare of a new ride.
+
+**In simple words:** We train a computer using previous Uber ride records so that it can predict the fare of future rides.
+
+### What type of ML problem is this?
+
+This is a **Supervised Machine Learning – Regression Problem**.
+
+Why?
+
+- **Supervised learning:** We train the model using data that already contains the correct fare.
+- **Regression:** We predict a numerical value (fare amount), not a category.
+
+For example:
+- Classification → Predict whether an email is spam or not.
+- Regression → Predict whether an Uber ride costs ₹150 or ₹250.
+
+## 2. Understanding the Dataset
+
+Your manual provides a Kaggle dataset called Uber Fares Dataset. Assignment_8
+
+The dataset contains information about Uber rides.
+
+Typical columns include:
+
+| Column | Meaning |
+|---|---|
+| `key` | Unique identifier for a ride |
+| `fare_amount` | Actual fare of the ride (target variable) |
+| `pickup_datetime` | Date and time of pickup |
+| `pickup_longitude` | Pickup longitude |
+| `pickup_latitude` | Pickup latitude |
+| `dropoff_longitude` | Drop-off longitude |
+| `dropoff_latitude` | Drop-off latitude |
+| `passenger_count` | Number of passengers |
+
+**Important terms:**
+
+- **Features (X):** Information used to make predictions, such as location and distance.
+- **Target (y):** The value we want to predict, which is `fare_amount`.
+
+## 3. Data Preprocessing
+
+According to your manual, data preprocessing means preparing raw data and making it suitable for a machine learning model. It is an important first step because real-world data can contain missing values, noise, and incorrect formats. Assignment_8
+
+Imagine a dataset contains:
+
+| Pickup | Drop-off | Fare |
+|---|---|---:|
+| A | B | 150 |
+| C | D | Missing |
+| E | F | 200 |
+| G | H | -500 |
+
+The dataset has missing and invalid values. We should clean it before training.
+
+### Common preprocessing operations
+
+1. **Handling missing values:** Remove or fill missing data.
+2. **Removing duplicates:** Delete repeated records.
+3. **Handling outliers:** Identify unusual values that may affect predictions.
+4. **Feature selection:** Keep useful columns and remove irrelevant ones.
+5. **Feature extraction:** Create useful new features, such as ride distance from coordinates.
+6. **Train-test split:** Divide the data into training and testing sets.
+
+### Why is preprocessing important?
+
+It improves data quality and helps the model learn meaningful patterns instead of being affected by missing, incorrect, or noisy data.
+
+## 4. Linear Regression
+
+Linear Regression is a supervised machine learning algorithm used to predict **continuous numerical values**, such as salary, age, sales, and product prices. Assignment_8
+
+### How does it work?
+
+Linear Regression tries to find the best-fitting straight line between input features and the target value.
+
+Its equation is:
+
+\[
+y = mx + c
+\]
+
+Where:
+- `y` = Predicted value
+- `x` = Input value
+- `m` = Slope of the line
+- `c` = Intercept
+
+### Uber example
+
+Suppose we have this simplified training data:
+
+| Distance (km) | Fare (₹) |
+|---:|---:|
+| 2 | 50 |
+| 4 | 90 |
+| 6 | 130 |
+| 8 | 170 |
+
+The model learns a relationship between distance and fare.
+
+If a new ride has a distance of 5 km, it can predict a fare of approximately ₹110.
+
+**Remember:** Linear Regression tries to find a straight-line relationship between input and output.
+
+The diagram on page 2 of your manual illustrates this: the scattered data points represent actual observations, while the straight line represents the regression line.
+
+---
+
+## 5. Random Forest Regression
+
+Random Forest is a supervised machine learning algorithm based on **ensemble learning**.
+
+Ensemble learning means combining multiple machine learning models to improve prediction performance.
+
+According to your manual, Random Forest creates multiple decision trees using different subsets of the dataset and combines their predictions. Assignment_8
+
+### How does it work?
+
+Imagine we want to predict an Uber fare.
+
+1. The algorithm creates multiple decision trees.
+2. Each tree learns from a different sample of the training data.
+3. Each tree predicts the fare.
+4. The predictions are averaged to produce the final fare.
+
+### Example
+
+Suppose five decision trees predict the following fares:
+
+| Decision Tree | Predicted Fare |
+|---|---:|
+| Tree 1 | ₹100 |
+| Tree 2 | ₹110 |
+| Tree 3 | ₹120 |
+| Tree 4 | ₹105 |
+| Tree 5 | ₹115 |
+
+Final prediction:
+
+\[
+\frac{100+110+120+105+115}{5}=110
+\]
+
+**Predicted Uber fare = ₹110**
+
+### Why is it called Random Forest?
+
+- Forest = Collection of multiple decision trees.
+- Random = Trees are trained using random samples and feature selections.
+
+**Important correction in the manual:** It mentions majority voting. Majority voting is used for Random Forest Classification. In Random Forest Regression, the final prediction is generally the average of the individual trees' numerical predictions.
+
+---
+
+## 6. Understanding Outliers
+
+An outlier is a data point that is significantly different from most other observations in a dataset.
+
+For example:
+
+Uber fares:
+
+`100, 120, 150, 180, 200, 5000`
+
+Here, ₹5000 may be an outlier because it is unusually high compared with the other fares.
+
+Outliers can affect machine learning models and produce inaccurate predictions. However, an unusual value is not automatically incorrect; it should be investigated before removal.
+
+Your manual explains three types of outliers. Assignment_8
+
+### A. Global Outliers
+
+A data point that is significantly different from the rest of the dataset.
+
+**Example:** Most rides cost ₹100–₹500, but one ride costs ₹10,000.
+
+### B. Collective Outliers
+
+A group of data points that behaves differently from the rest of the dataset.
+
+**Example:** A group of unusual network activities occurring together may indicate an intrusion.
+
+### C. Contextual Outliers
+
+A data point that is unusual in a particular context but may be normal in another context.
+
+**Example:** A temperature of 45°C during the rainy season may be unusual, but it may be more normal during summer.
+
+The diagrams on pages 3 and 4 illustrate these three types.
+
+### What is a Box Plot?
+
+A Box Plot is a graphical representation used to understand the distribution of data and identify potential outliers.
+
+It displays:
+- Minimum value (excluding outliers)
+- First quartile (Q1)
+- Median (Q2)
+- Third quartile (Q3)
+- Maximum value (excluding outliers)
+- Potential outliers
+
+A commonly used rule identifies potential outliers as values:
+
+\[
+< Q1-1.5(IQR)
+\]
+
+or
+
+\[
+> Q3+1.5(IQR)
+\]
+
+Where:
+
+\[
+IQR=Q3-Q1
+\]
+
+---
+
+## 7. Haversine Formula
+
+This is particularly important for your Uber fare prediction assignment.
+
+The Haversine formula calculates the distance between two geographical points using their latitude and longitude.
+
+Your manual describes it as the shortest distance between two points on a sphere, measured along its surface. Assignment_8
+
+### Why do we need it?
+
+An Uber dataset contains:
+- Pickup latitude
+- Pickup longitude
+- Drop-off latitude
+- Drop-off longitude
+
+Using these coordinates, we can calculate the approximate geographical distance of the ride.
+
+For example:
+
+- Pickup: Point A
+- Drop-off: Point B
+- Calculated distance: 10 km
+
+This distance can be used as an input feature for predicting the fare.
+
+**Remember:** Latitude represents north-south position, while longitude represents east-west position.
+
+---
+
+## 8. Matplotlib
+
+Matplotlib is a Python library used for data visualization.
+
+It helps us represent data graphically so that we can understand patterns, distributions, and relationships. Assignment_8
+
+Common plots include:
+
+| Plot | Purpose |
+|---|---|
+| Line Plot | Shows trends |
+| Bar Plot | Compares categories |
+| Scatter Plot | Shows relationships between variables |
+| Histogram | Shows data distribution |
+| Box Plot | Helps identify potential outliers |
+
+For this assignment, Matplotlib can help visualize fare distributions, outliers, and relationships between ride distance and fare.
+
+---
+
+## 9. Model Evaluation – MSE, RMSE and R²
+
+After training a machine learning model, we need to check how accurately it predicts fares.
+
+Your assignment specifically asks us to compare models using R², RMSE, etc. Assignment_8
+
+### A. Mean Squared Error (MSE)
+
+MSE calculates the average of the squared differences between actual and predicted values.
+
+\[
+MSE=\frac{1}{n}\sum_{i=1}^{n}(y_i-\hat y_i)^2
+\]
+
+Where:
+- \(y_i\) = Actual value
+- \(\hat y_i\) = Predicted value
+- \(n\) = Number of observations
+
+**Example:**
+
+Actual fares: `100, 200, 300`
+
+Predicted fares: `110, 190, 280`
+
+\[
+MSE=\frac{(100-110)^2+(200-190)^2+(300-280)^2}{3}
+\]
+
+\[
+MSE=\frac{100+100+400}{3}=200
+\]
+
+A lower MSE generally indicates better predictions.
+
+Your manual explains MSE on pages 4 and 5. Assignment_8
+
+### B. Root Mean Squared Error (RMSE)
+
+RMSE is the square root of MSE.
+
+\[
+RMSE=\sqrt{MSE}
+\]
+
+In our example:
+
+\[
+RMSE=\sqrt{200}\approx14.14
+\]
+
+RMSE is easier to interpret because it is expressed in the same unit as the target variable.
+
+For Uber fares, RMSE is expressed in the fare's currency.
+
+**Lower RMSE = Better predictions**, generally.
+
+### C. R² Score (R-squared)
+
+R² measures how well the model explains the variation in the target variable.
+
+- R² = 1: Perfect predictions.
+- R² = 0: Model performs like predicting the mean of the target values.
+- R² < 0: Model performs worse than that mean-based baseline.
+
+**Higher R² = Better model fit**, generally.
+
+### Quick comparison
+
+| Metric | What it measures | Better result |
+|---|---|---|
+| MSE | Average squared prediction error | Lower |
+| RMSE | Square root of average squared error | Lower |
+| R² | Explained variation in target | Higher |
+
+---
+
+## 10. Overall Workflow of This Assignment
+
+Understand this workflow because it connects all the concepts.
+
+1. **Import libraries:** Import Pandas, NumPy, Matplotlib and Scikit-learn.
+2. **Load dataset:** Read the Uber CSV file.
+3. **Explore data:** Check columns, data types, missing values and statistics.
+4. **Preprocess data:** Handle missing values, duplicates and invalid records.
+5. **Detect outliers:** Use methods such as Box Plot and statistical techniques.
+6. **Calculate distance:** Use the Haversine formula with pickup and drop-off coordinates.
+7. **Select features:** Choose useful input columns and the fare target.
+8. **Split dataset:** Divide data into training and testing sets.
+9. **Train models:** Implement Linear Regression and Random Forest Regression.
+10. **Evaluate models:** Calculate R², RMSE and other relevant metrics.
+11. **Compare results:** Determine which model performs better on the test data.
+
+---
+
+# 11. Important Viva Questions and Answers
+
+### Basic ML Questions
+
+**Q1. What is Machine Learning?**  
+Machine Learning is a branch of AI that enables computers to learn patterns from data and make predictions without being explicitly programmed for every task.
+
+**Q2. What is supervised learning?**  
+Supervised learning is a type of ML in which a model is trained using labelled data.
+
+**Q3. What is regression?**  
+Regression is a machine learning technique used to predict continuous numerical values.
+
+**Q4. Is Uber fare prediction classification or regression?**  
+It is a regression problem because we predict a numerical fare amount.
+
+**Q5. What is a feature?**  
+A feature is an input variable used by a machine learning model to make predictions.
+
+**Q6. What is a target variable?**  
+A target variable is the output value that the model tries to predict.
+
+### Preprocessing and Outliers
+
+**Q7. What is data preprocessing?**  
+It is the process of cleaning and transforming raw data into a suitable format for machine learning.
+
+**Q8. What is an outlier?**  
+An outlier is a data point that differs significantly from most other observations.
+
+**Q9. Name three types of outliers.**  
+Global, collective and contextual outliers.
+
+**Q10. What is a Box Plot?**  
+A Box Plot is a graphical representation of data distribution that can help identify potential outliers.
+
+### Algorithms
+
+**Q11. What is Linear Regression?**  
+Linear Regression is a supervised learning algorithm that predicts continuous values by finding a linear relationship between input and output variables.
+
+**Q12. What is Random Forest?**  
+Random Forest is an ensemble learning algorithm that combines multiple decision trees to make predictions.
+
+**Q13. What is ensemble learning?**  
+It is a technique that combines multiple models to improve prediction performance.
+
+**Q14. What is the difference between Linear Regression and Random Forest Regression?**  
+Linear Regression models a linear relationship, whereas Random Forest Regression combines multiple decision trees and can learn more complex relationships.
+
+**Q15. Why do we use Random Forest?**  
+It can capture complex patterns and often provides better predictions than a single decision tree.
+
+### Other Important Questions
+
+**Q16. What is the Haversine formula?**  
+It calculates the geographical distance between two points using their latitude and longitude.
+
+**Q17. What is Matplotlib?**  
+Matplotlib is a Python library used to create graphs and visualizations.
+
+**Q18. What is MSE?**  
+MSE is the average of the squared differences between actual and predicted values.
+
+**Q19. What is RMSE?**  
+RMSE is the square root of MSE and measures prediction error in the target variable's units.
+
+**Q20. What is R² score?**  
+R² measures how much variation in the target variable is explained by the model.
+
+---
+
+# 12. Answers to Assignment Questions
+
+Your manual lists five questions on page 5. Assignment_8
+
+**Q1. What is data preprocessing?**  
+Data preprocessing is the process of cleaning and transforming raw data into a suitable format for machine learning.
+
+**Q2. Define outliers.**  
+Outliers are data points that differ significantly from the majority of observations in a dataset.
+
+**Q3. What is Linear Regression?**  
+Linear Regression is a supervised ML algorithm that predicts continuous values by finding a linear relationship between variables.
+
+**Q4. What is the Random Forest Algorithm?**  
+Random Forest is an ensemble learning algorithm that combines multiple decision trees to produce a prediction.
+
+**Q5. Explain Pandas and NumPy.**  
+- **Pandas:** A Python library used for data manipulation and analysis, especially with tables and datasets.
+- **NumPy:** A Python library used for numerical computations and working with multidimensional arrays.
+
+---
+
+## 13. Important Points to Remember for Your Practical
+
+| Topic | Remember this |
+|---|---|
+| ML type | Supervised Learning |
+| Problem type | Regression |
+| Target variable | `fare_amount` |
+| Linear Regression | Fits a linear relationship |
+| Random Forest | Combines multiple decision trees |
+| Preprocessing | Cleans and prepares data |
+| Outliers | Unusual data points |
+| Box Plot | Helps identify potential outliers |
+| Haversine | Calculates geographical distance |
+| Matplotlib | Data visualization |
+| MSE / RMSE | Lower is generally better |
+| R² | Higher is generally better |
+
+### A few corrections and clarifications in your manual
+
+1. The manual says Random Forest uses majority voting. That applies to classification; regression generally uses the average of tree predictions.
+2. The manual lists RMSE and R² in the assignment objective, but its theory section mainly explains MSE. You should understand all three.
+3. The manual mentions correlation in its objective and conclusion, but does not explain it in detail. Correlation measures how strongly two variables are related.
+
+**Next:** We should move to the Python implementation. I'll explain the complete Uber fare prediction program step by step, including preprocessing, Haversine distance, Linear Regression, Random Forest Regression, and model evaluation—with comments in the code.
